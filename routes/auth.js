@@ -1,42 +1,92 @@
-const express = require('express');
+const express = require("express");
+const bcrypt = require("bcryptjs");
+const jwt = require("jsonwebtoken");
+const User = require("../models/User");
+const { generateOTP, sendOTPviaSMS, sendOTPviaEmail } = require("../lib/otp");
+const config = require("../config");
+
 const router = express.Router();
-const User = require('../models/User');
-const { sendVerificationEmail } = require('../utils/mailer');
-const crypto = require('crypto');
 
-// Signup Route
-router.post('/signup', async (req, res) => {
-    const { name, email, password } = req.body;
-    if (!name || !email || !password) return res.status(400).json({ error: 'All fields are required' });
+// Register User
+router.post("/register", async (req, res) => {
+    const { name, email, phone, password, otpMethod } = req.body;
 
-    const existingUser = await User.findOne({ email });
-    if (existingUser) return res.status(400).json({ error: 'Email already registered' });
+    // Validate input
+    if (!name || !email || !phone || !password || !otpMethod) {
+        return res.status(400).json({ error: "All fields are required" });
+    }
 
-    const verificationCode = crypto.randomInt(1000, 9999); // 4-digit code
+    try {
+        const userExists = await User.findOne({ $or: [{ email }, { phone }] });
+        if (userExists) return res.status(400).json({ error: "User already exists" });
 
-    const newUser = new User({ name, email, password, verificationCode, verified: false });
-    await newUser.save();
+        // Hash password
+        const hashedPassword = await bcrypt.hash(password, 10);
 
-    await sendVerificationEmail(email, verificationCode);
+        // Generate OTP
+        const otp = generateOTP();
+        const otpExpires = new Date(Date.now() + 5 * 60000); // 5 min expiry
 
-    res.json({ message: 'Signup successful! Please verify your email.', userId: newUser._id });
+        // Create user
+        const user = new User({ name, email, phone, password: hashedPassword, otp, otpExpires });
+        await user.save();
+
+        // Send OTP via chosen method
+        if (otpMethod === "sms") {
+            await sendOTPviaSMS(phone, otp);
+        } else {
+            await sendOTPviaEmail(email, otp);
+        }
+
+        res.json({ message: "OTP sent successfully. Verify your account." });
+    } catch (err) {
+        res.status(500).json({ error: "Server error" });
+    }
 });
 
-// Verify Account
-router.post('/verify', async (req, res) => {
-    const { userId, code } = req.body;
-    if (!userId || !code) return res.status(400).json({ error: 'User ID and Code are required' });
+// Verify OTP
+router.post("/verify-otp", async (req, res) => {
+    const { email, otp } = req.body;
 
-    const user = await User.findById(userId);
-    if (!user) return res.status(404).json({ error: 'User not found' });
+    try {
+        const user = await User.findOne({ email });
 
-    if (user.verificationCode != code) return res.status(400).json({ error: 'Invalid verification code' });
+        if (!user || user.otp !== otp || new Date() > user.otpExpires) {
+            return res.status(400).json({ error: "Invalid or expired OTP" });
+        }
 
-    user.verified = true;
-    user.verificationCode = null;
-    await user.save();
+        user.isVerified = true;
+        user.otp = null;
+        user.otpExpires = null;
+        await user.save();
 
-    res.json({ message: 'Account verified successfully!' });
+        res.json({ message: "Account verified successfully" });
+    } catch (err) {
+        res.status(500).json({ error: "Server error" });
+    }
+});
+
+// Login
+router.post("/login", async (req, res) => {
+    const { email, password } = req.body;
+
+    try {
+        const user = await User.findOne({ email });
+
+        if (!user || !(await bcrypt.compare(password, user.password))) {
+            return res.status(400).json({ error: "Invalid credentials" });
+        }
+
+        if (!user.isVerified) {
+            return res.status(403).json({ error: "Account not verified" });
+        }
+
+        const token = jwt.sign({ id: user._id }, config.JWT_SECRET, { expiresIn: "1h" });
+
+        res.json({ message: "Login successful", token });
+    } catch (err) {
+        res.status(500).json({ error: "Server error" });
+    }
 });
 
 module.exports = router;

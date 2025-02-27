@@ -1,0 +1,36 @@
+{
+  "name": "empirepay-vtu",
+  "version": "1.0.0",
+  "description": "EmpirePay - A VTU platform for airtime, data, utility payments, and crypto transactions.",
+  "author": "Empire Tech",
+  "keywords": ["empire-md-api", "Empire Tech", "VTU", "payment", "airtime", "data", "utility-bills"],
+  "main": "app.js",
+  "scripts": {
+    "start": "node app.js",
+    "dev": "nodemon app.js"
+  },
+  "dependencies": {
+    "@adiwajshing/keyed-db": "^0.2.4",
+    "@whiskeysockets/baileys": "6.7.12",
+    "@fizzxydev/baileys-pro": "^1.0.0",
+    "axios": "^1.5.0",
+    "bcryptjs": "^2.4.3",
+    "body-parser": "^1.20.2",
+    "compression": "^1.7.4",
+    "cors": "^2.8.5",
+    "dotenv": "^16.3.1",
+    "express": "^4.18.2",
+    "express-rate-limit": "^7.1.0",
+    "helmet": "^7.0.0",
+    "jsonwebtoken": "^9.0.2",
+    "mongoose": "^7.6.5",
+    "morgan": "^1.11.0",
+    "mysql2": "^3.4.5",
+    "pg": "^8.11.3",
+    "uuid": "^9.0.1",
+    "validator": "^13.9.0"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.0"
+  }
+}

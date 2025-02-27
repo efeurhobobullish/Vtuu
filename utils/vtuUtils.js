@@ -1,67 +1,28 @@
-const axios = require("axios");
-const config = require("../config");
+const axios = require('axios');
+const config = require('../config');
 
-// 📌 Process Airtime Purchase
-async function processAirtime(userId, network, phone, amount) {
+// Function to buy airtime
+async function buyAirtime(phone, amount) {
     try {
-        const response = await axios.post("https://api.paystack.co/topup/airtime", {
-            network,
-            phone,
-            amount
-        }, {
-            headers: { Authorization: `Bearer ${config.PAYSTACK_SECRET}` }
+        const response = await axios.post(config.VTU_API_URL + '/airtime', {
+            phone, amount, apiKey: config.PAYSTACK_SECRET
         });
-
-        if (response.data.status) {
-            return { success: true, message: "Airtime purchased successfully", data: response.data };
-        } else {
-            return { success: false, message: response.data.message };
-        }
+        return response.data;
     } catch (error) {
-        return { success: false, message: error.response?.data?.message || "Airtime purchase failed" };
+        throw new Error(error.response ? error.response.data.message : 'Airtime purchase failed');
     }
 }
 
-// 📌 Process Data Purchase
-async function processData(userId, network, phone, plan) {
+// Function to buy data
+async function buyData(phone, planId) {
     try {
-        const response = await axios.post("https://api.paystack.co/topup/data", {
-            network,
-            phone,
-            plan
-        }, {
-            headers: { Authorization: `Bearer ${config.PAYSTACK_SECRET}` }
+        const response = await axios.post(config.VTU_API_URL + '/data', {
+            phone, planId, apiKey: config.PAYSTACK_SECRET
         });
-
-        if (response.data.status) {
-            return { success: true, message: "Data purchased successfully", data: response.data };
-        } else {
-            return { success: false, message: response.data.message };
-        }
+        return response.data;
     } catch (error) {
-        return { success: false, message: error.response?.data?.message || "Data purchase failed" };
+        throw new Error(error.response ? error.response.data.message : 'Data purchase failed');
     }
 }
 
-// 📌 Process Bill Payment (Electricity, Cable, etc.)
-async function processBillPayment(userId, biller, account, amount) {
-    try {
-        const response = await axios.post("https://api.paystack.co/billpayments", {
-            biller,
-            account,
-            amount
-        }, {
-            headers: { Authorization: `Bearer ${config.PAYSTACK_SECRET}` }
-        });
-
-        if (response.data.status) {
-            return { success: true, message: "Bill paid successfully", data: response.data };
-        } else {
-            return { success: false, message: response.data.message };
-        }
-    } catch (error) {
-        return { success: false, message: error.response?.data?.message || "Bill payment failed" };
-    }
-}
-
-module.exports = { processAirtime, processData, processBillPayment };
+module.exports = { buyAirtime, buyData };

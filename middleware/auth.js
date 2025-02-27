@@ -1,18 +1,14 @@
 const jwt = require("jsonwebtoken");
-const { SECRET_KEY } = require("../config");
 
-const verifyAdmin = (req, res, next) => {
-  const token = req.headers.authorization?.split(" ")[1];
-  if (!token) return res.status(401).json({ error: "Unauthorized" });
+exports.authenticateAdmin = (req, res, next) => {
+    const token = req.header("Authorization");
+    if (!token) return res.status(401).json({ error: "Access denied!" });
 
-  try {
-    const decoded = jwt.verify(token, SECRET_KEY);
-    if (!decoded.isAdmin) return res.status(403).json({ error: "Access denied" });
-    req.user = decoded;
-    next();
-  } catch (error) {
-    res.status(400).json({ error: "Invalid token" });
-  }
+    try {
+        const verified = jwt.verify(token, "SECRET_KEY");
+        req.admin = verified;
+        next();
+    } catch (err) {
+        res.status(400).json({ error: "Invalid token!" });
+    }
 };
-
-module.exports = { verifyAdmin };

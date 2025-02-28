@@ -36,10 +36,10 @@
   <header>  
     <div class="logo">EmpirePay</div>  
     <nav>  
-      <a href="#">Home</a>  
-      <a href="#">Services</a>  
-      <a href="#">Contact</a>  
-      <button class="cta-button">Get Started</button>  
+      <a href="/">Home</a>  
+      <a href="/services">Services</a>  
+      <a href="#cont">Contact</a>  
+      <button onclick="window.location.href='/signup';" class="cta-button">Get Started</button>  
     </nav>  
   </header>  
   
@@ -47,7 +47,7 @@
   <section class="hero">  
     <h1>Effortless Payments, Seamless Transactions</h1>  
     <p>Affordable data, airtime, utility bills, and crypto transactions at your fingertips.</p>  
-    <a href="public/user/sign-up.html" class="explore-btn">Explore Services</a>  
+    <a href="/signup" class="explore-btn">Explore Services</a>  
   </section>  
   
   <!-- Services Section -->  
@@ -117,9 +117,9 @@
     </section>  
   
    <!-- Contact Section -->  
-<section class="contact">  
+<section id="cont" class="contact">  
   <h2>Contact Us</h2>  
-  <form>  
+  <form action="send-email">  
     <div class="input-group">  
       <label for="name">Name</label>  
       <input type="text" id="name" placeholder="Enter your name" required>  
@@ -135,7 +135,7 @@
       <textarea id="message" placeholder="Your message" required></textarea>  
     </div>  
   
-    <button type="submit">Send Message</button>  
+    <button type="submit" value="send">Send Message</button>  
   </form>  
 </section>  
   

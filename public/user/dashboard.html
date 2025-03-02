@@ -30,13 +30,13 @@
         </div>
 
         <!-- Balance Card -->
-        <div class="bg-gray-800 p-4 rounded-lg mb-4">
-            <div class="flex justify-between items-center mb-2">
-                <span class="text-gray-400">Available Balance</span>
-                <button onclick="toggleBalance()"><i id="eye-icon" class="fas fa-eye text-gray-400"></i></button>
-            </div>
-            <div id="balance" class="text-3xl font-bold">₦100,000</div>
-        </div>
+<div class="bg-gray-800 p-4 rounded-lg mb-4">
+    <div class="flex justify-between items-center mb-2">
+        <span class="text-gray-400">Available Balance</span>
+        <button onclick="toggleBalance()"><i id="eye-icon" class="fas fa-eye text-gray-400"></i></button>
+    </div>
+    <div id="balance" class="text-3xl font-bold">Loading...</div>
+</div>
 
         <!-- Action Buttons -->
         <div class="flex space-x-4 mb-4">
@@ -49,6 +49,7 @@
                 <i class="fas fa-paper-plane"></i>
             </a>
         </div>
+        
 
         <!-- Services -->
         <div class="mb-4">
@@ -170,17 +171,38 @@
         updateWelcomeMessage();
 
         // Toggle Balance Visibility
-        function toggleBalance() {
-            const balance = document.getElementById("balance");
-            const eyeIcon = document.getElementById("eye-icon");
-            if (balance.innerText === "₦100,000") {
-                balance.innerText = "****"; // Hide balance with stars
-                eyeIcon.classList.replace("fa-eye", "fa-eye-slash");
+        
+    document.addEventListener("DOMContentLoaded", () => {
+        fetchBalance();
+    });
+
+    // Fetch balance from the server
+    async function fetchBalance() {
+        try {
+            const response = await fetch("/api/user/balance"); // Adjust this URL based on your API route
+            const data = await response.json();
+            if (data.success) {
+                document.getElementById("balance").innerText = `₦${data.balance.toLocaleString()}`;
             } else {
-                balance.innerText = "₦100,000"; // Show balance
-                eyeIcon.classList.replace("fa-eye-slash", "fa-eye");
+                document.getElementById("balance").innerText = "Error loading balance";
             }
+        } catch (error) {
+            document.getElementById("balance").innerText = "Error loading balance";
         }
+    }
+
+    // Toggle Balance Visibility
+    function toggleBalance() {
+        const balance = document.getElementById("balance");
+        const eyeIcon = document.getElementById("eye-icon");
+        if (balance.innerText.includes("₦")) {
+            balance.innerText = "****"; // Hide balance with stars
+            eyeIcon.classList.replace("fa-eye", "fa-eye-slash");
+        } else {
+            fetchBalance(); // Reload balance from server when showing
+            eyeIcon.classList.replace("fa-eye-slash", "fa-eye");
+        }
+    }
 
         // Toggle more services
         function toggleMoreServices() {
@@ -196,4 +218,4 @@
         }
     </script>
 </body>
-</html>
+                    </html>

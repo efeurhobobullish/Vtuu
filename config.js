@@ -12,7 +12,7 @@ module.exports = {
     PAYSTACK_CALLBACK_URL: "https://empirepay.com/paystack/callback",
 
     // MongoDB Config (Full Connection URL)
-    MONGO_URI: "mongodb://localhost:27017/empirepay_db", // Use full URL instead
+    MONGO_URI: "mongodb+srv://empirepayvtu:empirevtu1@empirepayvtu.mygpq.mongodb.net/?retryWrites=true&w=majority&appName=empirepayvtu", // Use full URL instead
 
     // JWT & Security Config
     JWT_SECRET: "a7cb7034fe3d4d0a93b98e9c78b50b3b30d62f0a1f3bfc875fbf22f5c8fe08db",
@@ -26,8 +26,8 @@ module.exports = {
     // Email Service Config (SMTP)
     EMAIL_HOST: "smtp.gmail.com",
     EMAIL_PORT: 587,
-    EMAIL_USER: "your_email@gmail.com",
-    EMAIL_PASSWORD: "your_email_password",
+    EMAIL_USER: "empiretechapi@gmail.com",
+    EMAIL_PASSWORD: "fxlq bhap skup nssi",
 
     // Logging & Debugging
     LOG_LEVEL: "info",

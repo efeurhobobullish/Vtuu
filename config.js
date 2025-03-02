@@ -1,5 +1,5 @@
 module.exports = {
-    APP_NAME: "EmpirePay Vtu",
+    APP_NAME: "EmpirePay",
     PORT: 3000,
 
     // Admin Panel Credentials
@@ -30,18 +30,18 @@ module.exports = {
     EMAIL_USER: "your_email@gmail.com",
     EMAIL_PASSWORD: "your_email_password",
 
-    // Logging & Debugging
-    LOG_LEVEL: "info",
-    ENABLE_DEBUG: true,
-
-    // Firebase Config
+    // Firebase Config ✅ Now Stored in `config.js`
     FIREBASE_CONFIG: {
         apiKey: "AIzaSyA7PgOugBpc4qi_qUiVjfI8KuClk2vBHzo",
         authDomain: "empirepay-vtu.firebaseapp.com",
         projectId: "empirepay-vtu",
-        storageBucket: "empirepay-vtu.appspot.com",
+        storageBucket: "empirepay-vtu.firebasestorage.app",
         messagingSenderId: "151995966724",
         appId: "1:151995966724:web:42342317c4bd3bcf719c51",
         measurementId: "G-XFYKL2RY5C"
-    }
+    },
+
+    // Logging & Debugging
+    LOG_LEVEL: "info",
+    ENABLE_DEBUG: true,
 };

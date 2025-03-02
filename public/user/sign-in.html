@@ -1,4 +1,3 @@
-<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -6,7 +5,6 @@
     <title>Sign In</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
-    <script src="https://accounts.google.com/gsi/client" async defer></script> <!-- Google SDK -->
 </head>
 <body class="bg-gray-900 text-gray-300 flex items-center justify-center min-h-screen">
     <div class="w-full max-w-md p-8 space-y-6">
@@ -20,17 +18,15 @@
         </div>
         <h2 class="text-3xl font-bold text-white">Sign In</h2>
         <p class="text-gray-400">Welcome back, let's sign you in ...</p>
-        
-        <!-- Email/Password Login -->
-        <form id="loginForm" class="mt-8 space-y-6">
+        <form class="mt-8 space-y-6" action="https://example.com/login" method="POST">
             <div class="space-y-1">
                 <label for="email" class="block text-sm font-medium text-gray-300">E-mail Address:<span class="text-red-500">*</span></label>
-                <input id="email" name="email" type="email" required class="appearance-none rounded-md relative block w-full px-3 py-2 border border-gray-700 bg-gray-800 text-gray-300 placeholder-gray-500 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" placeholder="Enter e-mail address">
+                <input id="email" name="email" type="email" autocomplete="email" required class="appearance-none rounded-md relative block w-full px-3 py-2 border border-gray-700 bg-gray-800 text-gray-300 placeholder-gray-500 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" placeholder="Enter e-mail address">
             </div>
             <div class="space-y-1">
                 <label for="password" class="block text-sm font-medium text-gray-300">Password:<span class="text-red-500">*</span></label>
                 <div class="relative">
-                    <input id="password" name="password" type="password" required class="appearance-none rounded-md relative block w-full px-3 py-2 border border-gray-700 bg-gray-800 text-gray-300 placeholder-gray-500 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" placeholder="> 7 characters">
+                    <input id="password" name="password" type="password" autocomplete="current-password" required class="appearance-none rounded-md relative block w-full px-3 py-2 border border-gray-700 bg-gray-800 text-gray-300 placeholder-gray-500 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" placeholder="> 7 characters">
                     <button type="button" class="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-200" onclick="togglePasswordVisibility()">
                         <i id="password-toggle" class="fas fa-eye-slash"></i>
                     </button>
@@ -38,34 +34,20 @@
             </div>
             <div class="flex items-center justify-between">
                 <div class="text-sm">
-                    <a href="forgot-password.html" class="font-medium text-indigo-500 hover:text-indigo-400">Forgot password?</a>
+                    <a href="forgot-password.html" class="font-medium text-indigo-500 hover:text-indigo-400">forgotten password?</a>
                 </div>
             </div>
             <div>
-                <button type="submit" class="w-full py-2 px-4 border border-transparent text-sm font-medium rounded-full text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                <button type="submit" class="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-full text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
                     Login
                 </button>
             </div>
         </form>
-
-        <!-- Google Sign-In Button -->
-        <div class="text-center my-4">
-            <p class="text-gray-400 text-sm">Or continue with</p>
-        </div>
-        <div class="flex justify-center">
-            <button onclick="googleSignIn()" class="w-full flex justify-center bg-gray-800 hover:bg-gray-700 text-white py-2 px-4 rounded-lg">
-                <img src="assets/google.svg" alt="Google Sign-In" class="h-6 w-6 mr-2">
-                Sign in with Google
-            </button>
-        </div>
-
         <div class="text-center text-sm text-gray-400">
             <p>Create new account? <a href="signup.html" class="font-medium text-indigo-500 hover:text-indigo-400">Sign Up</a></p>
         </div>
     </div>
-
     <script>
-        // Password Toggle
         function togglePasswordVisibility() {
             const passwordInput = document.getElementById('password');
             const passwordToggle = document.getElementById('password-toggle');
@@ -78,61 +60,6 @@
                 passwordToggle.classList.remove('fa-eye');
                 passwordToggle.classList.add('fa-eye-slash');
             }
-        }
-
-        // Login Form Submission
-        document.getElementById("loginForm").addEventListener("submit", async function(event) {
-            event.preventDefault(); // Prevent form from reloading
-
-            const email = document.getElementById("email").value;
-            const password = document.getElementById("password").value;
-
-            try {
-                const response = await fetch("https://empirepay.onrender.com/login", {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({ email, password })
-                });
-
-                const data = await response.json();
-
-                if (data.success) {
-                    localStorage.setItem("token", data.token); // Store JWT token
-                    window.location.href = "dashboard.html"; // Redirect after login
-                } else {
-                    alert("Login failed: " + data.message);
-                }
-            } catch (error) {
-                console.error("Login Error:", error);
-            }
-        });
-
-        // Google Login Function
-        async function googleSignIn() {
-            google.accounts.id.prompt(); // Open Google login popup
-            google.accounts.id.initialize({
-                client_id: "YOUR_GOOGLE_CLIENT_ID",
-                callback: async (response) => {
-                    try {
-                        const res = await fetch("https://empirepay.onrender.com/google-login", {
-                            method: "POST",
-                            headers: { "Content-Type": "application/json" },
-                            body: JSON.stringify({ token: response.credential })
-                        });
-
-                        const data = await res.json();
-
-                        if (data.success) {
-                            localStorage.setItem("token", data.token); // Store JWT token
-                            window.location.href = "dashboard.html"; // Redirect after login
-                        } else {
-                            alert("Google Login failed: " + data.message);
-                        }
-                    } catch (error) {
-                        console.error("Google Login Error:", error);
-                    }
-                }
-            });
         }
     </script>
 </body>

@@ -21,27 +21,32 @@
         <form id="signup-form" class="space-y-4">
             <div>
                 <label class="block text-sm font-medium mb-1" for="username">Username <span class="text-red-500">*</span></label>
-                <input class="w-full px-3 py-2 bg-gray-800 text-gray-300 rounded-md focus:ring-2 focus:ring-purple-600" type="text" id="username" name="username" placeholder="Enter your username" required>
+                <input class="w-full px-3 py-2 bg-gray-800 text-gray-300 rounded-md focus:ring-2 focus:ring-purple-600" 
+                       type="text" id="username" name="username" placeholder="Enter your username" required>
             </div>
             <div>
                 <label class="block text-sm font-medium mb-1" for="email">E-mail Address <span class="text-red-500">*</span></label>
-                <input class="w-full px-3 py-2 bg-gray-800 text-gray-300 rounded-md focus:ring-2 focus:ring-purple-600" type="email" id="email" name="email" placeholder="Enter e-mail address" required>
+                <input class="w-full px-3 py-2 bg-gray-800 text-gray-300 rounded-md focus:ring-2 focus:ring-purple-600" 
+                       type="email" id="email" name="email" placeholder="Enter e-mail address" required>
             </div>
             <div>
                 <label class="block text-sm font-medium mb-1" for="password">Password <span class="text-red-500">*</span></label>
                 <div class="relative">
-                    <input class="w-full px-3 py-2 bg-gray-800 text-gray-300 rounded-md focus:ring-2 focus:ring-purple-600" type="password" id="password" name="password" placeholder="> 6 characters" required>
-                    <button type="button" class="absolute inset-y-0 right-0 px-3 text-gray-400" onclick="togglePasswordVisibility()">
-                        <i id="password-toggle" class="fas fa-eye-slash"></i>
+                    <input class="w-full px-3 py-2 bg-gray-800 text-gray-300 rounded-md focus:ring-2 focus:ring-purple-600" 
+                           type="password" id="password" name="password" placeholder="> 6 characters" required>
+                    <button type="button" class="absolute inset-y-0 right-0 px-3 text-gray-400" id="toggle-password">
+                        <i id="password-icon" class="fas fa-eye-slash"></i>
                     </button>
                 </div>
             </div>
             <div>
                 <label class="block text-sm font-medium mb-1" for="validationCode">Validation Code <span class="text-red-500">*</span></label>
-                <input class="w-full px-3 py-2 bg-gray-800 text-gray-300 rounded-md focus:ring-2 focus:ring-purple-600" type="text" id="validationCode" name="validationCode" placeholder="Enter validation code" required>
+                <input class="w-full px-3 py-2 bg-gray-800 text-gray-300 rounded-md focus:ring-2 focus:ring-purple-600" 
+                       type="text" id="validationCode" name="validationCode" placeholder="Enter validation code" required>
             </div>
 
-            <button class="w-full py-2 bg-purple-600 text-white rounded-md hover:bg-purple-700 focus:ring-2 focus:ring-purple-600" type="submit">Sign Up</button>
+            <button class="w-full py-2 bg-purple-600 text-white rounded-md hover:bg-purple-700 focus:ring-2 focus:ring-purple-600" 
+                    type="submit" id="signup-button">Sign Up</button>
         </form>
 
         <!-- Success/Error Messages -->
@@ -52,54 +57,87 @@
 
     <!-- JavaScript -->
     <script>
-        // Toggle Password Visibility
-        function togglePasswordVisibility() {
-            const passwordInput = document.getElementById('password');
-            const passwordToggle = document.getElementById('password-toggle');
-            if (passwordInput.type === 'password') {
-                passwordInput.type = 'text';
-                passwordToggle.classList.replace('fa-eye-slash', 'fa-eye');
-            } else {
-                passwordInput.type = 'password';
-                passwordToggle.classList.replace('fa-eye', 'fa-eye-slash');
-            }
-        }
-
-        // Handle Signup Submission
-        document.getElementById("signup-form").addEventListener("submit", async (e) => {
-            e.preventDefault();
-
-            const formData = {
-                username: document.getElementById("username").value.trim(),
-                email: document.getElementById("email").value.trim(),
-                password: document.getElementById("password").value.trim(),
-                validationCode: document.getElementById("validationCode").value.trim()
-            };
-
+        document.addEventListener("DOMContentLoaded", () => {
+            const signupForm = document.getElementById("signup-form");
+            const passwordInput = document.getElementById("password");
+            const passwordToggle = document.getElementById("toggle-password");
+            const passwordIcon = document.getElementById("password-icon");
             const messageEl = document.getElementById("signup-message");
-            messageEl.textContent = "";
-            messageEl.className = "text-center text-sm mt-4";
+            const submitButton = document.getElementById("signup-button");
 
-            try {
-                const response = await fetch("/signup", {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify(formData)
-                });
+            // Toggle Password Visibility
+            passwordToggle.addEventListener("click", () => {
+                const isPassword = passwordInput.type === "password";
+                passwordInput.type = isPassword ? "text" : "password";
+                passwordIcon.classList.toggle("fa-eye", isPassword);
+                passwordIcon.classList.toggle("fa-eye-slash", !isPassword);
+            });
 
-                const result = await response.json();
+            // Handle Signup Submission
+            signupForm.addEventListener("submit", async (e) => {
+                e.preventDefault();
 
-                if (result.success) {
-                    messageEl.textContent = result.message;
-                    messageEl.classList.add("text-green-500");
-                    setTimeout(() => window.location.href = "/login", 2000);
-                } else {
-                    messageEl.textContent = result.message;
-                    messageEl.classList.add("text-red-500");
+                const username = document.getElementById("username").value.trim();
+                const email = document.getElementById("email").value.trim();
+                const password = passwordInput.value.trim();
+                const validationCode = document.getElementById("validationCode").value.trim();
+
+                // Reset previous messages
+                messageEl.textContent = "";
+                messageEl.className = "text-center text-sm mt-4";
+
+                // Input Validation
+                if (!username || !email || !password || !validationCode) {
+                    showMessage("All fields are required!", "text-red-500");
+                    return;
                 }
-            } catch (error) {
-                messageEl.textContent = "Network error. Please try again!";
-                messageEl.classList.add("text-red-500");
+
+                if (!validateEmail(email)) {
+                    showMessage("Enter a valid email address!", "text-red-500");
+                    return;
+                }
+
+                if (password.length < 6) {
+                    showMessage("Password must be at least 6 characters!", "text-red-500");
+                    return;
+                }
+
+                // Disable button to prevent multiple submissions
+                submitButton.disabled = true;
+                submitButton.textContent = "Signing Up...";
+
+                try {
+                    const response = await fetch("/signup", {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({ username, email, password, validationCode })
+                    });
+
+                    const result = await response.json();
+
+                    if (result.success) {
+                        showMessage(result.message, "text-green-500");
+                        setTimeout(() => (window.location.href = "/login"), 2000);
+                    } else {
+                        showMessage(result.message, "text-red-500");
+                    }
+                } catch (error) {
+                    showMessage("Network error. Please try again!", "text-red-500");
+                } finally {
+                    submitButton.disabled = false;
+                    submitButton.textContent = "Sign Up";
+                }
+            });
+
+            // Function to show messages
+            function showMessage(text, className) {
+                messageEl.textContent = text;
+                messageEl.className = `text-center text-sm mt-4 ${className}`;
+            }
+
+            // Function to validate email
+            function validateEmail(email) {
+                return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
             }
         });
     </script>

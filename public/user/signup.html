@@ -43,7 +43,7 @@
         <!-- Success/Error Messages -->
         <p id="signup-message" class="text-center text-sm mt-4"></p>
 
-        <p class="text-center text-gray-400">Already have an account? <a href="/user/sign-in.html" class="text-blue-500">Login</a></p>
+        <p class="text-center text-gray-400">Already have an account? <a href="/login" class="text-blue-500">Login</a></p>
     </div>
 
     <!-- JavaScript -->
@@ -87,7 +87,7 @@
             if (result.success) {
                 messageEl.textContent = result.message;
                 messageEl.classList.add("text-green-500");
-                setTimeout(() => window.location.href = "/user/sign-in.html", 2000);
+                setTimeout(() => window.location.href = "/login", 2000);
             } else {
                 messageEl.textContent = result.message;
                 messageEl.classList.add("text-red-500");

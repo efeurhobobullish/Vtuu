@@ -8,30 +8,30 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
 </head>
 <body class="bg-gray-900 text-white h-screen flex items-center justify-center">
-    <div class="w-full max-w-sm md:max-w-md lg:max-w-lg p-10 space-y-6 bg-gray-800 rounded-md shadow-lg">
+    <div class="w-full max-w-sm md:max-w-md lg:max-w-lg p-10 space-y-6">
         <div class="flex justify-between items-center">
             <a href="/" class="text-gray-400"><i class="fas fa-arrow-left"></i></a>
             <button class="text-gray-400"><i class="fas fa-moon"></i></button>
         </div>
 
-        <h2 class="text-3xl font-bold text-center">Sign Up</h2>
-        <p class="text-gray-400 text-center">Create an account with EmpirePay...</p>
+        <h2 class="text-3xl font-bold">Sign Up</h2>
+        <p class="text-gray-400">Create an account with EmpirePay...</p>
 
         <!-- Signup Form -->
         <form id="signup-form" class="space-y-4">
             <div>
                 <label class="block text-sm font-medium mb-1" for="username">Username <span class="text-red-500">*</span></label>
-                <input class="w-full px-3 py-2 bg-gray-700 text-white rounded-md focus:ring-2 focus:ring-purple-600" type="text" id="username" name="username" placeholder="Enter your username" required>
+                <input class="w-full px-3 py-2 bg-gray-800 text-gray-300 rounded-md focus:ring-2 focus:ring-purple-600" type="text" id="username" name="username" placeholder="Enter your username" required>
             </div>
             <div>
                 <label class="block text-sm font-medium mb-1" for="email">E-mail Address <span class="text-red-500">*</span></label>
-                <input class="w-full px-3 py-2 bg-gray-700 text-white rounded-md focus:ring-2 focus:ring-purple-600" type="email" id="email" name="email" placeholder="Enter e-mail address" required>
+                <input class="w-full px-3 py-2 bg-gray-800 text-gray-300 rounded-md focus:ring-2 focus:ring-purple-600" type="email" id="email" name="email" placeholder="Enter e-mail address" required>
             </div>
             <div>
                 <label class="block text-sm font-medium mb-1" for="password">Password <span class="text-red-500">*</span></label>
                 <div class="relative">
-                    <input class="w-full px-3 py-2 bg-gray-700 text-white rounded-md focus:ring-2 focus:ring-purple-600" type="password" id="password" name="password" placeholder="> 6 characters" required>
-                    <button type="button" class="absolute inset-y-0 right-3 text-gray-400" onclick="togglePasswordVisibility()">
+                    <input class="w-full px-3 py-2 bg-gray-800 text-gray-300 rounded-md focus:ring-2 focus:ring-purple-600" type="password" id="password" name="password" placeholder="> 6 characters" required>
+                    <button type="button" class="absolute inset-y-0 right-0 px-3 text-gray-400" onclick="togglePasswordVisibility()">
                         <i id="password-toggle" class="fas fa-eye-slash"></i>
                     </button>
                 </div>
@@ -43,7 +43,7 @@
         <!-- Success/Error Messages -->
         <p id="signup-message" class="text-center text-sm mt-4"></p>
 
-        <p class="text-center text-gray-400">Already have an account? <a href="sign-in.html" class="text-blue-500">Login</a></p>
+        <p class="text-center text-gray-400">Already have an account? <a href="/user/sign-in.html" class="text-blue-500">Login</a></p>
     </div>
 
     <!-- JavaScript -->
@@ -87,7 +87,7 @@
             if (result.success) {
                 messageEl.textContent = result.message;
                 messageEl.classList.add("text-green-500");
-                setTimeout(() => window.location.href = "sign-in.html", 2000);
+                setTimeout(() => window.location.href = "/user/sign-in.html", 2000);
             } else {
                 messageEl.textContent = result.message;
                 messageEl.classList.add("text-red-500");

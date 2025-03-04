@@ -3,94 +3,125 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sign In</title>
+    <title>Signup - EmpirePay</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
 </head>
-<body class="bg-gray-900 text-gray-300 flex items-center justify-center min-h-screen">
-    <div class="w-full max-w-md p-8 space-y-6">
-        <h2 class="text-3xl font-bold text-white">Sign In</h2>
-        <p class="text-gray-400">Welcome back, let's sign you in...</p>
+<body class="bg-gray-900 text-white h-screen flex items-center justify-center">
+    <div class="w-full max-w-sm md:max-w-md lg:max-w-lg p-10 space-y-6">
+        <div class="flex justify-between items-center">
+            <a href="/" class="text-gray-400"><i class="fas fa-arrow-left"></i></a>
+            <button class="text-gray-400"><i class="fas fa-moon"></i></button>
+        </div>
 
-        <form id="loginForm" class="mt-8 space-y-6">
-            <div class="space-y-1">
-                <label for="email" class="block text-sm font-medium text-gray-300">E-mail Address:</label>
-                <input id="email" name="email" type="email" required class="w-full px-3 py-2 border border-gray-700 bg-gray-800 text-gray-300 rounded-md">
+        <h2 class="text-3xl font-bold">Sign Up</h2>
+        <p class="text-gray-400">Create an account with EmpirePay...</p>
+
+        <!-- Signup Form -->
+        <form id="signup-form" class="space-y-4">
+            <div>
+                <label class="block text-sm font-medium mb-1" for="username">Username <span class="text-red-500">*</span></label>
+                <input class="w-full px-3 py-2 bg-gray-800 text-gray-300 rounded-md focus:ring-2 focus:ring-purple-600" 
+                       type="text" id="username" name="username" placeholder="Enter your username" required>
             </div>
-            <div class="space-y-1">
-                <label for="password" class="block text-sm font-medium text-gray-300">Password:</label>
+            <div>
+                <label class="block text-sm font-medium mb-1" for="email">E-mail Address <span class="text-red-500">*</span></label>
+                <input class="w-full px-3 py-2 bg-gray-800 text-gray-300 rounded-md focus:ring-2 focus:ring-purple-600" 
+                       type="email" id="email" name="email" placeholder="Enter e-mail address" required>
+            </div>
+            <div>
+                <label class="block text-sm font-medium mb-1" for="password">Password <span class="text-red-500">*</span></label>
                 <div class="relative">
-                    <input id="password" name="password" type="password" required class="w-full px-3 py-2 border border-gray-700 bg-gray-800 text-gray-300 rounded-md">
-                    <button type="button" class="absolute inset-y-0 right-0 pr-3 text-gray-400" onclick="togglePassword()">
-                        <i id="password-toggle" class="fas fa-eye-slash"></i>
+                    <input class="w-full px-3 py-2 bg-gray-800 text-gray-300 rounded-md focus:ring-2 focus:ring-purple-600" 
+                           type="password" id="password" name="password" placeholder="> 6 characters" required>
+                    <button type="button" class="absolute inset-y-0 right-0 px-3 text-gray-400" id="toggle-password">
+                        <i id="password-icon" class="fas fa-eye-slash"></i>
                     </button>
                 </div>
             </div>
-            <p id="error-message" class="text-red-500 text-sm hidden"></p>
-            
-            <button id="loginBtn" type="submit" class="w-full py-2 flex items-center justify-center text-white bg-indigo-600 hover:bg-indigo-700 rounded-md">
-                <i id="loadingSpinner" class="fas fa-spinner fa-spin hidden mr-2"></i>
-                <span id="loginText">Login</span>
+
+            <button class="w-full py-2 bg-purple-600 text-white rounded-md hover:bg-purple-700 focus:ring-2 focus:ring-purple-600 flex justify-center items-center" 
+                    type="submit" id="signup-button">
+                <span id="signup-text">Sign Up</span>
+                <span id="signup-loading" class="hidden ml-2">
+                    <i class="fas fa-spinner fa-spin"></i>
+                </span>
             </button>
         </form>
 
-        <p class="text-center text-sm text-gray-400">
-            No account? <a href="signup" class="text-indigo-500 hover:text-indigo-400">Sign Up</a>
-        </p>
+        <!-- Success/Error Messages -->
+        <p id="signup-message" class="text-center text-sm mt-4"></p>
+
+        <p class="text-center text-gray-400">Already have an account? <a href="/login" class="text-blue-500">Login</a></p>
     </div>
 
+    <!-- JavaScript -->
     <script>
-        function togglePassword() {
-            const passwordInput = document.getElementById('password');
-            const passwordToggle = document.getElementById('password-toggle');
-            passwordInput.type = passwordInput.type === 'password' ? 'text' : 'password';
-            passwordToggle.classList.toggle('fa-eye-slash');
-            passwordToggle.classList.toggle('fa-eye');
-        }
+        document.addEventListener("DOMContentLoaded", () => {
+            const signupForm = document.getElementById("signup-form");
+            const passwordInput = document.getElementById("password");
+            const passwordToggle = document.getElementById("toggle-password");
+            const passwordIcon = document.getElementById("password-icon");
+            const messageEl = document.getElementById("signup-message");
+            const submitButton = document.getElementById("signup-button");
+            const signupText = document.getElementById("signup-text");
+            const signupLoading = document.getElementById("signup-loading");
 
-        document.getElementById("loginForm").addEventListener("submit", async function (e) {
-            e.preventDefault();
-            const email = document.getElementById("email").value.trim();
-            const password = document.getElementById("password").value.trim();
-            const loginBtn = document.getElementById("loginBtn");
-            const loginText = document.getElementById("loginText");
-            const loadingSpinner = document.getElementById("loadingSpinner");
-            const errorMessage = document.getElementById("error-message");
+            // Toggle Password Visibility
+            passwordToggle.addEventListener("click", () => {
+                const isPassword = passwordInput.type === "password";
+                passwordInput.type = isPassword ? "text" : "password";
+                passwordIcon.classList.toggle("fa-eye", isPassword);
+                passwordIcon.classList.toggle("fa-eye-slash", !isPassword);
+            });
 
-            // Clear previous errors
-            errorMessage.innerText = "";
-            errorMessage.classList.add("hidden");
+            // Handle Signup Submission
+            signupForm.addEventListener("submit", async (e) => {
+                e.preventDefault();
 
-            // Show loading animation
-            loginText.classList.add("hidden");
-            loadingSpinner.classList.remove("hidden");
-            loginBtn.disabled = true;
+                const username = document.getElementById("username").value.trim();
+                const email = document.getElementById("email").value.trim();
+                const password = passwordInput.value.trim();
 
-            try {
-                const response = await fetch("/login", {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({ email, password }),
-                });
+                // Reset previous messages
+                messageEl.textContent = "";
+                messageEl.className = "text-center text-sm mt-4";
 
-                const data = await response.json();
+                // Show loading state
+                signupText.classList.add("hidden");
+                signupLoading.classList.remove("hidden");
+                submitButton.disabled = true;
 
-                if (!response.ok) {
-                    throw new Error(data.message || "Invalid credentials.");
+                try {
+                    const response = await fetch("https://testpay-61h6.onrender.com/signup", {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({ username, email, password })
+                    });
+
+                    const result = await response.json();
+
+                    if (result.success) {
+                        showMessage("✅ Signup successful! Check your email for verification.", "text-green-500");
+                        signupForm.reset();
+                    } else {
+                        showMessage(`❌ ${result.message}`, "text-red-500");
+                    }
+                } catch (error) {
+                    showMessage("❌ Network error. Please try again!", "text-red-500");
+                } finally {
+                    // Hide loading state
+                    signupText.classList.remove("hidden");
+                    signupLoading.classList.add("hidden");
+                    submitButton.disabled = false;
                 }
+            });
 
-                // Store token and redirect
-                localStorage.setItem("token", data.token);
-                window.location.href = "/dashboard";
-            } catch (error) {
-                errorMessage.innerText = error.message;
-                errorMessage.classList.remove("hidden");
+            // Function to show messages
+            function showMessage(text, className) {
+                messageEl.textContent = text;
+                messageEl.className = `text-center text-sm mt-4 ${className}`;
             }
-
-            // Reset UI
-            loginText.classList.remove("hidden");
-            loadingSpinner.classList.add("hidden");
-            loginBtn.disabled = false;
         });
     </script>
 </body>

@@ -79,8 +79,9 @@
         const data = await response.json();
 
         if (data.success) {
-            localStorage.setItem("token", data.token); // ✅ Save JWT
-            window.location.href = "/dashboard"; // ✅ Redirect user
+            alert("Login successful!");
+            localStorage.setItem("token", data.token); // ✅ Store token for future requests
+            window.location.href = "/dashboard";
         } else {
             alert(data.message);
         }

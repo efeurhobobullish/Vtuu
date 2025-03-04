@@ -36,6 +36,10 @@
                     </button>
                 </div>
             </div>
+            <div>
+                <label class="block text-sm font-medium mb-1" for="validationCode">Validation Code <span class="text-red-500">*</span></label>
+                <input class="w-full px-3 py-2 bg-gray-800 text-gray-300 rounded-md focus:ring-2 focus:ring-purple-600" type="text" id="validationCode" name="validationCode" placeholder="Enter validation code" required>
+            </div>
 
             <button class="w-full py-2 bg-purple-600 text-white rounded-md hover:bg-purple-700 focus:ring-2 focus:ring-purple-600" type="submit">Sign Up</button>
         </form>
@@ -68,28 +72,33 @@
             const formData = {
                 username: document.getElementById("username").value.trim(),
                 email: document.getElementById("email").value.trim(),
-                password: document.getElementById("password").value.trim()
+                password: document.getElementById("password").value.trim(),
+                validationCode: document.getElementById("validationCode").value.trim()
             };
 
-            console.log("Submitting Data:", formData); // Debugging
-
-            const response = await fetch("/signup", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(formData)
-            });
-
-            const result = await response.json();
-            console.log("Response:", result); // Debugging
-
             const messageEl = document.getElementById("signup-message");
+            messageEl.textContent = "";
+            messageEl.className = "text-center text-sm mt-4";
 
-            if (result.success) {
-                messageEl.textContent = result.message;
-                messageEl.classList.add("text-green-500");
-                setTimeout(() => window.location.href = "/login", 2000);
-            } else {
-                messageEl.textContent = result.message;
+            try {
+                const response = await fetch("/signup", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(formData)
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    messageEl.textContent = result.message;
+                    messageEl.classList.add("text-green-500");
+                    setTimeout(() => window.location.href = "/login", 2000);
+                } else {
+                    messageEl.textContent = result.message;
+                    messageEl.classList.add("text-red-500");
+                }
+            } catch (error) {
+                messageEl.textContent = "Network error. Please try again!";
                 messageEl.classList.add("text-red-500");
             }
         });

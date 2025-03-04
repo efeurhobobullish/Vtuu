@@ -63,31 +63,31 @@
         }
         
         document.querySelector("form").addEventListener("submit", async function (e) {
-        e.preventDefault();
+    e.preventDefault();
 
-        const formData = new FormData(this);
-        const email = formData.get("email");
-        const password = formData.get("password");
+    const formData = new FormData(this);
+    const email = formData.get("email");
+    const password = formData.get("password");
 
-        try {
-            const response = await fetch("/login", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ email, password }),
-            });
+    try {
+        const response = await fetch("/login", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ email, password }),
+        });
 
-            const data = await response.json();
+        const data = await response.json();
 
-            if (data.success) {
-                alert("Login successful!");
-                window.location.href = "/dashboard";
-            } else {
-                alert(data.message);
-            }
-        } catch (error) {
-            alert("Something went wrong. Please try again!");
+        if (data.success) {
+            localStorage.setItem("token", data.token); // ✅ Save JWT
+            window.location.href = "/dashboard"; // ✅ Redirect user
+        } else {
+            alert(data.message);
         }
-    });
+    } catch (error) {
+        alert("Something went wrong. Please try again!");
+    }
+});
     </script>
 </body>
 </html>

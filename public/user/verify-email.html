@@ -26,7 +26,7 @@
             }
 
             try {
-                const response = await fetch(`/api/verify-email?token=${token}`);
+                const response = await fetch(`/verify-email?token=${token}`);
                 const data = await response.json();
 
                 document.getElementById("statusMessage").innerText = data.message;

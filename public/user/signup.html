@@ -21,29 +21,35 @@
         <form id="signup-form" class="space-y-4">
             <div>
                 <label class="block text-sm font-medium mb-1" for="username">Username <span class="text-red-500">*</span></label>
-                <input class="w-full px-3 py-2 bg-gray-800 text-gray-300 rounded-md focus:ring-2 focus:ring-purple-600" type="text" id="username" name="name" placeholder="Enter your username" required>
+                <input class="w-full px-3 py-2 bg-gray-800 text-gray-300 rounded-md focus:ring-2 focus:ring-purple-600" 
+                       type="text" id="username" name="username" placeholder="Enter your username" required>
             </div>
             <div>
                 <label class="block text-sm font-medium mb-1" for="email">E-mail Address <span class="text-red-500">*</span></label>
-                <input class="w-full px-3 py-2 bg-gray-800 text-gray-300 rounded-md focus:ring-2 focus:ring-purple-600" type="email" id="email" name="email" placeholder="Enter e-mail address" required>
+                <input class="w-full px-3 py-2 bg-gray-800 text-gray-300 rounded-md focus:ring-2 focus:ring-purple-600" 
+                       type="email" id="email" name="email" placeholder="Enter e-mail address" required>
             </div>
             <div>
                 <label class="block text-sm font-medium mb-1" for="password">Password <span class="text-red-500">*</span></label>
                 <div class="relative">
-                    <input class="w-full px-3 py-2 bg-gray-800 text-gray-300 rounded-md focus:ring-2 focus:ring-purple-600" type="password" id="password" name="password" placeholder="> 6 characters" required>
+                    <input class="w-full px-3 py-2 bg-gray-800 text-gray-300 rounded-md focus:ring-2 focus:ring-purple-600" 
+                           type="password" id="password" name="password" placeholder="> 6 characters" required>
                     <button type="button" class="absolute inset-y-0 right-0 px-3 text-gray-400" onclick="togglePasswordVisibility()">
                         <i id="password-toggle" class="fas fa-eye-slash"></i>
                     </button>
                 </div>
             </div>
 
-            <button class="w-full py-2 bg-purple-600 text-white rounded-md hover:bg-purple-700 focus:ring-2 focus:ring-purple-600" type="submit">Sign Up</button>
+            <button class="w-full py-2 bg-purple-600 text-white rounded-md hover:bg-purple-700 focus:ring-2 focus:ring-purple-600" 
+                    type="submit">Sign Up</button>
         </form>
 
         <!-- Success/Error Messages -->
         <p id="signup-message" class="text-center text-sm mt-4"></p>
 
-        <p class="text-center text-gray-400">Already have an account? <a href="sign-in.html" class="text-blue-500">Login</a></p>
+        <p class="text-center text-gray-400">Already have an account? 
+            <a href="sign-in.html" class="text-blue-500">Login</a>
+        </p>
     </div>
 
     <!-- JavaScript -->
@@ -63,36 +69,42 @@
 
         // Handle Signup Submission
         document.getElementById("signup-form").addEventListener("submit", async (e) => {
-    e.preventDefault();
-    
-    const formData = {
-        name: document.getElementById("username").value.trim(),
-        email: document.getElementById("email").value.trim(),
-        password: document.getElementById("password").value.trim()
-    };
+            e.preventDefault();
 
-    console.log("Submitting Data:", formData); // Debugging
+            const formData = {
+                username: document.getElementById("username").value.trim(), // ✅ Fixed 'username'
+                email: document.getElementById("email").value.trim(),
+                password: document.getElementById("password").value.trim()
+            };
 
-    const response = await fetch("/signup", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(formData)
-    });
+            console.log("Submitting Data:", formData); // Debugging
 
-    const result = await response.json();
-    console.log("Response:", result); // Debugging
+            try {
+                const response = await fetch("/signup", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(formData)
+                });
 
-    const messageEl = document.getElementById("signup-message");
+                const result = await response.json();
+                console.log("Response:", result); // Debugging
 
-    if (result.success) {
-        messageEl.textContent = result.message;
-        messageEl.classList.add("text-green-500");
-        setTimeout(() => window.location.href = "sign-in.html", 2000);
-    } else {
-        messageEl.textContent = result.message;
-        messageEl.classList.add("text-red-500");
-    }
-});
+                const messageEl = document.getElementById("signup-message");
+
+                if (result.success) {
+                    messageEl.textContent = result.message;
+                    messageEl.classList.add("text-green-500");
+                    setTimeout(() => window.location.href = "sign-in.html", 2000);
+                } else {
+                    messageEl.textContent = result.message;
+                    messageEl.classList.add("text-red-500");
+                }
+            } catch (error) {
+                console.error("Signup Error:", error);
+                document.getElementById("signup-message").textContent = "Server error, please try again!";
+                document.getElementById("signup-message").classList.add("text-red-500");
+            }
+        });
     </script>
 </body>
 </html>

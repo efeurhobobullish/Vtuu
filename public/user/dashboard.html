@@ -9,7 +9,7 @@
 </head>
 <body class="bg-gray-900 text-white">
     <div class="container mx-auto p-4 pb-20">
-        
+
         <!-- Pull-to-Refresh -->
         <div id="refresh-area" class="text-center text-gray-400 py-2 opacity-0 transition-opacity">
             <i class="fas fa-sync-alt animate-spin"></i> Refreshing...
@@ -24,19 +24,19 @@
                     <span id="notification-badge" class="absolute -top-1 -right-2 bg-red-600 text-xs w-5 h-5 flex items-center justify-center rounded-full hidden">1</span>
                 </a>
                 <div class="relative">
-                    <a href="profile.html" onclick="triggerHaptic()"><i class="fas fa-user-circle text-2xl"></i></a>
+                    <a href="settings.html" onclick="triggerHaptic()"><i class="fas fa-user-circle text-2xl"></i></a>
                 </div>
             </div>
         </div>
 
         <!-- Balance Card -->
-<div class="bg-gray-800 p-4 rounded-lg mb-4">
-    <div class="flex justify-between items-center mb-2">
-        <span class="text-gray-400">Available Balance</span>
-        <button onclick="toggleBalance()"><i id="eye-icon" class="fas fa-eye text-gray-400"></i></button>
-    </div>
-    <div id="balance" class="text-3xl font-bold">Loading...</div>
-</div>
+        <div class="bg-gray-800 p-4 rounded-lg mb-4">
+            <div class="flex justify-between items-center mb-2">
+                <span class="text-gray-400">Available Balance</span>
+                <button onclick="toggleBalance()"><i id="eye-icon" class="fas fa-eye text-gray-400"></i></button>
+            </div>
+            <div id="balance" class="text-3xl font-bold">Loading...</div>
+        </div>
 
         <!-- Action Buttons -->
         <div class="flex space-x-4 mb-4">
@@ -49,7 +49,7 @@
                 <i class="fas fa-paper-plane"></i>
             </a>
         </div>
-        
+
 
         <!-- Services -->
         <div class="mb-4">
@@ -159,6 +159,20 @@
     </div>
 
     <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            const token = localStorage.getItem("token");
+            if (token) {
+                fetchDashboardData(token);
+                fetchBalance(token);
+            } else {
+                // Redirect to login if no token
+                window.location.href = "/login";
+            }
+
+            // Dynamic Welcome Message
+            updateWelcomeMessage();
+        });
+
         // Dynamic Welcome Message
         function updateWelcomeMessage() {
             const hour = new Date().getHours();
@@ -168,41 +182,76 @@
             else greeting = "Good evening";
             document.getElementById("welcome-message").innerText = `${greeting}, User!`;
         }
-        updateWelcomeMessage();
 
-        // Toggle Balance Visibility
-        
-    document.addEventListener("DOMContentLoaded", () => {
-        fetchBalance();
-    });
+        async function fetchDashboardData(token) {
+            try {
+                const response = await fetch("/api/dashboard", {
+                    method: "GET",
+                    headers: {
+                        "Authorization": token
+                    }
+                });
 
-    // Fetch balance from the server
-    async function fetchBalance() {
-        try {
-            const response = await fetch("/api/user/balance"); // Adjust this URL based on your API route
-            const data = await response.json();
-            if (data.success) {
-                document.getElementById("balance").innerText = `₦${data.balance.toLocaleString()}`;
-            } else {
+                if (!response.ok) {
+                    // Handle errors: redirect to login, display message, etc.
+                    console.error("Error fetching dashboard:", response.status);
+                    window.location.href = "/login"; // Redirect to login
+                    return;
+                }
+
+                const data = await response.json();
+
+                if (data.success) {
+                    // Update dashboard elements with data
+                    document.getElementById("welcome-message").innerText = `Welcome, ${data.data.username}!`; // Update welcome message
+                } else {
+                    console.error("Dashboard error:", data.message);
+                }
+            } catch (error) {
+                console.error("Error fetching dashboard:", error);
+            }
+        }
+
+        // Fetch balance from the server
+        async function fetchBalance(token) {
+            try {
+                const response = await fetch("/api/user/balance", {
+                    method: "GET",
+                    headers: {
+                        "Authorization": token  // Add Authorization header
+                    }
+                });
+
+                if (!response.ok) {
+                    console.error("Error fetching balance:", response.status);
+                    document.getElementById("balance").innerText = "Error loading balance";
+                    return;
+                }
+
+                const data = await response.json();
+                if (data.success) {
+                    document.getElementById("balance").innerText = `₦${data.balance.toLocaleString()}`;
+                } else {
+                    document.getElementById("balance").innerText = "Error loading balance";
+                }
+            } catch (error) {
                 document.getElementById("balance").innerText = "Error loading balance";
             }
-        } catch (error) {
-            document.getElementById("balance").innerText = "Error loading balance";
         }
-    }
 
-    // Toggle Balance Visibility
-    function toggleBalance() {
-        const balance = document.getElementById("balance");
-        const eyeIcon = document.getElementById("eye-icon");
-        if (balance.innerText.includes("₦")) {
-            balance.innerText = "****"; // Hide balance with stars
-            eyeIcon.classList.replace("fa-eye", "fa-eye-slash");
-        } else {
-            fetchBalance(); // Reload balance from server when showing
-            eyeIcon.classList.replace("fa-eye-slash", "fa-eye");
+        // Toggle Balance Visibility
+        function toggleBalance() {
+            const balance = document.getElementById("balance");
+            const eyeIcon = document.getElementById("eye-icon");
+            if (balance.innerText.includes("₦")) {
+                balance.innerText = "****"; // Hide balance with stars
+                eyeIcon.classList.replace("fa-eye", "fa-eye-slash");
+            } else {
+                const token = localStorage.getItem("token");
+                fetchBalance(token); // Reload balance from server when showing
+                eyeIcon.classList.replace("fa-eye-slash", "fa-eye");
+            }
         }
-    }
 
         // Toggle more services
         function toggleMoreServices() {
@@ -218,4 +267,4 @@
         }
     </script>
 </body>
-                    </html>
+</html>

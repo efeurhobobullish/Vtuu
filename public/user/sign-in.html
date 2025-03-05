@@ -51,41 +51,79 @@
         }
 
         document.getElementById("loginForm").addEventListener("submit", async function (e) {
-    e.preventDefault();
-    const email = document.getElementById("email").value;
-    const password = document.getElementById("password").value;
-    const loginBtn = document.getElementById("loginBtn");
-    const errorMessage = document.getElementById("error-message");
+            e.preventDefault();
+            const email = document.getElementById("email").value;
+            const password = document.getElementById("password").value;
+            const loginBtn = document.getElementById("loginBtn");
+            const errorMessage = document.getElementById("error-message");
 
-    loginBtn.innerText = "Logging in...";
-    loginBtn.disabled = true;
+            loginBtn.innerText = "Logging in...";
+            loginBtn.disabled = true;
 
-    try {
-        const response = await fetch("/login", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ email, password }),
+            try {
+                const response = await fetch("/login", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ email, password }),
+                });
+
+                const data = await response.json();
+                loginBtn.innerText = "Login";
+                loginBtn.disabled = false;
+
+                if (data.success) {
+                    // Store token with "Bearer " prefix
+                    localStorage.setItem("token", `Bearer ${data.token}`);
+                    window.location.href = "/dashboard";
+                } else {
+                    errorMessage.innerText = data.message;
+                    errorMessage.classList.remove("hidden");
+                }
+            } catch (error) {
+                errorMessage.innerText = "Something went wrong!";
+                errorMessage.classList.remove("hidden");
+                loginBtn.innerText = "Login";
+                loginBtn.disabled = false;
+            }
         });
 
-        const data = await response.json();
-        loginBtn.innerText = "Login";
-        loginBtn.disabled = false;
+        // After successful login, load dashboard with auth header
+        window.onload = function() {
+            const token = localStorage.getItem("token");
+            if (token) {
+                // Example: Fetch dashboard data.  Adapt to your specific needs.
+                fetchDashboardData(token);
+            }
+        };
 
-        if (data.success) {
-            // IMPORTANT: Store token with "Bearer " prefix
-            localStorage.setItem("token", `Bearer ${data.token}`);
-            window.location.href = "/dashboard";
-        } else {
-            errorMessage.innerText = data.message;
-            errorMessage.classList.remove("hidden");
+        async function fetchDashboardData(token) {
+            try {
+                const response = await fetch("/api/dashboard", {
+                    method: "GET",
+                    headers: {
+                        "Authorization": token // Include the token
+                    }
+                });
+
+                if (!response.ok) {
+                    // Handle errors: redirect to login, display message, etc.
+                    console.error("Error fetching dashboard:", response.status);
+                    window.location.href = "/login"; // Redirect to login
+                    return;
+                }
+
+                const data = await response.json();
+
+                if (data.success) {
+                    // Update dashboard elements with data.data (adapt to your HTML)
+                    console.log(data.data); // Display dashboard data
+                } else {
+                    console.error("Dashboard error:", data.message);
+                }
+            } catch (error) {
+                console.error("Error fetching dashboard:", error);
+            }
         }
-    } catch (error) {
-        errorMessage.innerText = "Something went wrong!";
-        errorMessage.classList.remove("hidden");
-        loginBtn.innerText = "Login";
-        loginBtn.disabled = false;
-    }
-});
     </script>
 </body>
 </html>

@@ -159,79 +159,83 @@
     </div>
 
     <script>
-      document.addEventListener("DOMContentLoaded", () => {
-    fetchDashboardData();
-    fetchBalance();
-    updateWelcomeMessage();
-});
+    document.addEventListener("DOMContentLoaded", () => {
+        validateUserSession();
+        fetchDashboardData();
+        fetchBalance();
+        updateWelcomeMessage();
+    });
 
-// Dynamic Welcome Message
-function updateWelcomeMessage() {
-    const hour = new Date().getHours();
-    let greeting = "Welcome";
-    if (hour < 12) greeting = "Good morning";
-    else if (hour < 18) greeting = "Good afternoon";
-    else greeting = "Good evening";
-    document.getElementById("welcome-message").innerText = `${greeting}, User!`;
-}
-
-// Fetch dashboard data from the server
-async function fetchDashboardData() {
-    const userId = localStorage.getItem("userId");
-    if (!userId) {
-        console.error("User ID not found. Redirecting to login...");
-        window.location.href = "/login"; // Redirect to login if no userId
-        return;
+    // Validate User Session
+    function validateUserSession() {
+        const email = localStorage.getItem("email"); // Using email instead of userId
+        if (!email) {
+            console.error("Email not found. Redirecting to login...");
+            window.location.href = "/login"; // Redirect if no email
+        }
     }
 
-    try {
-        const response = await fetch(`/dashboard?userId=${userId}`);
-
-        if (!response.ok) {
-            console.error("Error fetching dashboard:", response.status);
-            window.location.href = "/login"; // Redirect if unauthorized
-            return;
-        }
-
-        const data = await response.json();
-
-        if (data.success) {
-            document.getElementById("welcome-message").innerText = `Welcome, ${data.data.username}!`;
-        } else {
-            console.error("Dashboard error:", data.message);
-        }
-    } catch (error) {
-        console.error("Error fetching dashboard:", error);
-    }
-}
-
-// Fetch balance from the server
-async function fetchBalance() {
-    const userId = localStorage.getItem("userId");
-    if (!userId) {
-        console.error("User ID not found.");
-        return;
+    // Dynamic Welcome Message
+    function updateWelcomeMessage() {
+        const hour = new Date().getHours();
+        let greeting = "Welcome";
+        if (hour < 12) greeting = "Good morning";
+        else if (hour < 18) greeting = "Good afternoon";
+        else greeting = "Good evening";
+        document.getElementById("welcome-message").innerText = `${greeting}, User!`;
     }
 
-    try {
-        const response = await fetch(`/api/user/balance?userId=${userId}`);
+    // Fetch dashboard data
+    async function fetchDashboardData() {
+        const email = localStorage.getItem("email");
+        if (!email) return;
 
-        if (!response.ok) {
-            console.error("Error fetching balance:", response.status);
-            document.getElementById("balance").innerText = "Error loading balance";
-            return;
-        }
+        try {
+            const response = await fetch(`/dashboard?email=${encodeURIComponent(email)}`);
 
-        const data = await response.json();
-        if (data.success) {
-            document.getElementById("balance").innerText = `₦${data.balance.toLocaleString()}`;
-        } else {
-            document.getElementById("balance").innerText = "Error loading balance";
+            if (!response.ok) {
+                console.error("Unauthorized access. Redirecting to login...");
+                window.location.href = "/login";
+                return;
+            }
+
+            const data = await response.json();
+
+            if (data.success && data.data.username) {
+                document.getElementById("welcome-message").innerText = `Welcome, ${data.data.username}!`;
+            } else {
+                console.error("Dashboard error:", data.message || "Unknown error");
+            }
+        } catch (error) {
+            console.error("Error fetching dashboard data:", error);
         }
-    } catch (error) {
-        document.getElementById("balance").innerText = "Error loading balance";
     }
-}
+
+    // Fetch user balance
+    async function fetchBalance() {
+        const email = localStorage.getItem("email");
+        if (!email) return;
+
+        try {
+            const response = await fetch(`/api/user/balance?email=${encodeURIComponent(email)}`);
+
+            if (!response.ok) {
+                throw new Error(`HTTP Error: ${response.status}`);
+            }
+
+            const data = await response.json();
+            const balanceEl = document.getElementById("balance");
+
+            if (data.success) {
+                balanceEl.innerText = `₦${data.balance.toLocaleString()}`;
+            } else {
+                balanceEl.innerText = "Balance unavailable";
+            }
+        } catch (error) {
+            console.error("Error fetching balance:", error);
+            document.getElementById("balance").innerText = "Balance unavailable";
+        }
+    }
 </script>
 </body>
 </html>

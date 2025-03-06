@@ -49,46 +49,51 @@
                 passwordToggle.classList.replace('fa-eye', 'fa-eye-slash');
             }
         }
+document.getElementById("loginForm").addEventListener("submit", async function (e) {
+    e.preventDefault();
+    const email = document.getElementById("email").value.trim();
+    const password = document.getElementById("password").value.trim();
+    const loginBtn = document.getElementById("loginBtn");
+    const errorMessage = document.getElementById("error-message");
 
-        document.getElementById("loginForm").addEventListener("submit", async function (e) {
-            e.preventDefault();
-            const email = document.getElementById("email").value;
-            const password = document.getElementById("password").value;
-            const loginBtn = document.getElementById("loginBtn");
-            const errorMessage = document.getElementById("error-message");
+    // Reset previous error messages
+    errorMessage.innerText = "";
+    errorMessage.classList.add("hidden");
 
-            loginBtn.innerText = "Logging in...";
-            loginBtn.disabled = true;
+    if (!email || !password) {
+        errorMessage.innerText = "Email and password are required!";
+        errorMessage.classList.remove("hidden");
+        return;
+    }
 
-            try {
-                const response = await fetch("/login", {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({ email, password }),
-                });
+    loginBtn.innerText = "Logging in...";
+    loginBtn.disabled = true;
 
-                const data = await response.json();
-                loginBtn.innerText = "Login";
-                loginBtn.disabled = false;
-
-                if (data.success) {
-                    localStorage.setItem("token", `Bearer ${data.token}`);
-                    setTimeout(() => {
-                        window.location.href = "/dashboard";
-                    }, 50); // 50 milliseconds delay
-                } else {
-                    errorMessage.innerText = data.message;
-                    errorMessage.classList.remove("hidden");
-                }
-            } catch (error) {
-                errorMessage.innerText = "Something went wrong!";
-                errorMessage.classList.remove("hidden");
-                loginBtn.innerText = "Login";
-                loginBtn.disabled = false;
-            }
+    try {
+        const response = await fetch("/login", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ email, password }),
         });
 
+        const data = await response.json();
+        loginBtn.innerText = "Login";
+        loginBtn.disabled = false;
 
+        if (data.success) {
+            window.location.href = "/dashboard";
+        } else {
+            errorMessage.innerText = data.message || "Invalid email or password!";
+            errorMessage.classList.remove("hidden");
+        }
+    } catch (error) {
+        errorMessage.innerText = "Something went wrong!";
+        errorMessage.classList.remove("hidden");
+        loginBtn.innerText = "Login";
+        loginBtn.disabled = false;
+    }
+});
+        
     </script>
 </body>
 </html>

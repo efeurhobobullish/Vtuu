@@ -38,62 +38,71 @@
     </div>
 
     <script>
-        function togglePassword() {
-            const passwordInput = document.getElementById('password');
-            const passwordToggle = document.getElementById('password-toggle');
-            if (passwordInput.type === 'password') {
-                passwordInput.type = 'text';
-                passwordToggle.classList.replace('fa-eye-slash', 'fa-eye');
-            } else {
-                passwordInput.type = 'password';
-                passwordToggle.classList.replace('fa-eye', 'fa-eye-slash');
-            }
-        }
-document.getElementById("loginForm").addEventListener("submit", async function (e) {
-    e.preventDefault();
-    const email = document.getElementById("email").value.trim();
-    const password = document.getElementById("password").value.trim();
-    const loginBtn = document.getElementById("loginBtn");
-    const errorMessage = document.getElementById("error-message");
+    document.addEventListener("DOMContentLoaded", () => {
+        const loginForm = document.getElementById("loginForm");
+        const passwordInput = document.getElementById("password");
+        const passwordToggle = document.getElementById("password-toggle");
+        const loginBtn = document.getElementById("loginBtn");
+        const errorMessage = document.getElementById("error-message");
 
-    // Reset previous error messages
-    errorMessage.innerText = "";
-    errorMessage.classList.add("hidden");
-
-    if (!email || !password) {
-        errorMessage.innerText = "Email and password are required!";
-        errorMessage.classList.remove("hidden");
-        return;
-    }
-
-    loginBtn.innerText = "Logging in...";
-    loginBtn.disabled = true;
-
-    try {
-        const response = await fetch("/login", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ email, password }),
+        // Toggle Password Visibility
+        passwordToggle.addEventListener("click", () => {
+            const isHidden = passwordInput.type === "password";
+            passwordInput.type = isHidden ? "text" : "password";
+            passwordToggle.classList.toggle("fa-eye-slash", isHidden);
+            passwordToggle.classList.toggle("fa-eye", !isHidden);
         });
 
-        const data = await response.json();
-        loginBtn.innerText = "Login";
-        loginBtn.disabled = false;
+        // Handle Login Submission
+        loginForm.addEventListener("submit", async (e) => {
+            e.preventDefault();
 
-        if (data.success) {
-            window.location.href = "/dashboard";
-        } else {
-            errorMessage.innerText = data.message || "Invalid email or password!";
-            errorMessage.classList.remove("hidden");
+            const email = document.getElementById("email").value.trim();
+            const password = passwordInput.value.trim();
+
+            // Reset previous messages
+            showMessage("", true);
+
+            if (!email || !password) {
+                showMessage("❌ Email and password are required!", false);
+                return;
+            }
+
+            setLoadingState(true);
+
+            try {
+                const response = await fetch("/login", { // Ensure the correct backend path
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ email, password })
+                });
+
+                const data = await response.json();
+                setLoadingState(false);
+
+                if (data.success) {
+                    window.location.href = "/dashboard"; // Redirect on success
+                } else {
+                    showMessage(`❌ ${data.message || "Invalid email or password!"}`, false);
+                }
+            } catch (error) {
+                showMessage("❌ Network error. Please try again!", false);
+                setLoadingState(false);
+            }
+        });
+
+        // Function to show messages
+        function showMessage(text, isHidden) {
+            errorMessage.textContent = text;
+            errorMessage.classList.toggle("hidden", isHidden);
         }
-    } catch (error) {
-        errorMessage.innerText = "Something went wrong!";
-        errorMessage.classList.remove("hidden");
-        loginBtn.innerText = "Login";
-        loginBtn.disabled = false;
-    }
-});
-        
-    </script>
+
+        // Function to toggle loading state
+        function setLoadingState(isLoading) {
+            loginBtn.innerText = isLoading ? "Logging in..." : "Login";
+            loginBtn.disabled = isLoading;
+        }
+    });
+</script>
 </body>
 </html>

@@ -71,7 +71,7 @@
             setLoadingState(true);
 
             try {
-                const response = await fetch("/login", { // Ensure the correct backend path
+                const response = await fetch("/login", {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify({ email, password })
@@ -81,6 +81,7 @@
                 setLoadingState(false);
 
                 if (data.success) {
+                    localStorage.setItem("user", JSON.stringify(data.user)); // Store user data
                     window.location.href = "/dashboard"; // Redirect on success
                 } else {
                     showMessage(`❌ ${data.message || "Invalid email or password!"}`, false);

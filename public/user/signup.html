@@ -69,10 +69,10 @@
 
         // Toggle Password Visibility
         passwordToggle.addEventListener("click", () => {
-            const isPassword = passwordInput.type === "password";
-            passwordInput.type = isPassword ? "text" : "password";
-            passwordIcon.classList.toggle("fa-eye", isPassword);
-            passwordIcon.classList.toggle("fa-eye-slash", !isPassword);
+            const isHidden = passwordInput.type === "password";
+            passwordInput.type = isHidden ? "text" : "password";
+            passwordIcon.classList.toggle("fa-eye-slash", isHidden);
+            passwordIcon.classList.toggle("fa-eye", !isHidden);
         });
 
         // Handle Signup Submission
@@ -84,8 +84,7 @@
             const password = passwordInput.value.trim();
 
             // Reset previous messages
-            messageEl.textContent = "";
-            messageEl.className = "text-center text-sm mt-4";
+            showMessage("", "");
 
             if (!username || !email || !password) {
                 showMessage("❌ All fields are required!", "text-red-500");
@@ -93,12 +92,10 @@
             }
 
             // Show loading state
-            signupText.classList.add("hidden");
-            signupLoading.classList.remove("hidden");
-            submitButton.disabled = true;
+            setLoadingState(true);
 
             try {
-                const response = await fetch("/signup", {
+                const response = await fetch("/signup", {  // Ensure this matches your backend route
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify({ username, email, password })
@@ -109,19 +106,14 @@
                 if (result.success) {
                     showMessage("✅ Signup successful! Redirecting to login...", "text-green-500");
                     signupForm.reset();
-                    setTimeout(() => {
-                        window.location.href = "/login"; // Redirect to login
-                    }, 1000);
+                    setTimeout(() => window.location.href = "/login", 1000);
                 } else {
                     showMessage(`❌ ${result.message}`, "text-red-500");
                 }
             } catch (error) {
                 showMessage("❌ Network error. Please try again!", "text-red-500");
             } finally {
-                // Hide loading state
-                signupText.classList.remove("hidden");
-                signupLoading.classList.add("hidden");
-                submitButton.disabled = false;
+                setLoadingState(false);
             }
         });
 
@@ -129,6 +121,13 @@
         function showMessage(text, className) {
             messageEl.textContent = text;
             messageEl.className = `text-center text-sm mt-4 ${className}`;
+        }
+
+        // Function to toggle loading state
+        function setLoadingState(isLoading) {
+            submitButton.disabled = isLoading;
+            signupText.classList.toggle("hidden", isLoading);
+            signupLoading.classList.toggle("hidden", !isLoading);
         }
     });
 </script>

@@ -232,31 +232,6 @@ async function fetchBalance() {
         document.getElementById("balance").innerText = "Error loading balance";
     }
 }
-
-// Toggle Balance Visibility
-function toggleBalance() {
-    const balance = document.getElementById("balance");
-    const eyeIcon = document.getElementById("eye-icon");
-    if (balance.innerText.includes("₦")) {
-        balance.innerText = "****"; // Hide balance with stars
-        eyeIcon.classList.replace("fa-eye", "fa-eye-slash");
-    } else {
-        fetchBalance(); // Reload balance from server when showing
-        eyeIcon.classList.replace("fa-eye-slash", "fa-eye");
-    }
-}
-
-// Toggle more services
-function toggleMoreServices() {
-    document.getElementById("more-services").classList.toggle("hidden");
-}
-
-// Haptic Feedback Function
-function triggerHaptic() {
-    if (navigator.vibrate) {
-        navigator.vibrate(50); // Vibrate for 50ms
-    }
-}
 </script>
 </body>
 </html>

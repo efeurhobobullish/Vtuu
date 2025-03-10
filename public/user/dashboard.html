@@ -158,84 +158,72 @@
         </div>
     </div>
 
-    <script>
-    document.addEventListener("DOMContentLoaded", () => {
-        validateUserSession();
-        fetchDashboardData();
-        fetchBalance();
-        updateWelcomeMessage();
-    });
+           <script>
+document.addEventListener("DOMContentLoaded", () => {
+    validateUserSession();
+    fetchDashboardData();
+    fetchBalance();
+});
 
-    // Validate User Session
-    function validateUserSession() {
-        const email = localStorage.getItem("email"); // Using email instead of userId
-        if (!email) {
-            console.error("Email not found. Redirecting to login...");
-            window.location.href = "/login"; // Redirect if no email
+// Validate User Session
+function validateUserSession() {
+    const email = localStorage.getItem("email");
+    if (!email) {
+        console.error("User not logged in. Redirecting to login...");
+        window.location.href = "login.html"; // Ensure correct login page path
+    }
+}
+
+// Fetch Dashboard Data
+async function fetchDashboardData() {
+    const email = localStorage.getItem("email");
+    if (!email) return;
+
+    try {
+        const response = await fetch(`/dashboard?email=${encodeURIComponent(email)}`);
+        if (!response.ok) throw new Error("Unauthorized access");
+
+        const data = await response.json();
+        if (data.success) {
+            updateWelcomeMessage(data.data.username);
+        } else {
+            console.error("Dashboard error:", data.message);
         }
+    } catch (error) {
+        console.error("Error fetching dashboard data:", error);
+        window.location.href = "login.html"; // Redirect to login if error occurs
     }
+}
 
-    // Dynamic Welcome Message
-    function updateWelcomeMessage() {
-        const hour = new Date().getHours();
-        let greeting = "Welcome";
-        if (hour < 12) greeting = "Good morning";
-        else if (hour < 18) greeting = "Good afternoon";
-        else greeting = "Good evening";
-        document.getElementById("welcome-message").innerText = `${greeting}, User!`;
+// Fetch User Balance
+async function fetchBalance() {
+    const email = localStorage.getItem("email");
+    if (!email) return;
+
+    try {
+        const response = await fetch(`/api/user/balance?email=${encodeURIComponent(email)}`);
+        if (!response.ok) throw new Error("Failed to fetch balance");
+
+        const data = await response.json();
+        document.getElementById("balance").innerText = data.success 
+            ? `₦${data.balance.toLocaleString()}`
+            : "Balance unavailable";
+    } catch (error) {
+        console.error("Error fetching balance:", error);
+        document.getElementById("balance").innerText = "Balance unavailable";
     }
+}
 
-    // Fetch dashboard data
-    async function fetchDashboardData() {
-        const email = localStorage.getItem("email");
-        if (!email) return;
+// Update Welcome Message
+function updateWelcomeMessage(username = "User") {
+    const hour = new Date().getHours();
+    let greeting = "Welcome";
+    if (hour < 12) greeting = "Good morning";
+    else if (hour < 18) greeting = "Good afternoon";
+    else greeting = "Good evening";
 
-        try {
-            const response = await fetch(`/dashboard?email=${encodeURIComponent(email)}`);
-
-            if (!response.ok) {
-                console.error("Unauthorized access. Redirecting to login...");
-                window.location.href = "/login";
-                return;
-            }
-
-            const data = await response.json();
-
-            if (data.success && data.data.username) {
-                document.getElementById("welcome-message").innerText = `Welcome, ${data.data.username}!`;
-            } else {
-                console.error("Dashboard error:", data.message || "Unknown error");
-            }
-        } catch (error) {
-            console.error("Error fetching dashboard data:", error);
-        }
-    }
-
-    // Fetch user balance
-    async function fetchBalance() {
-        const email = localStorage.getItem("email");
-        if (!email) return;
-
-        try {
-            const response = await fetch(`/api/user/balance?email=${encodeURIComponent(email)}`);
-
-            if (!response.ok) {
-                throw new Error(`HTTP Error: ${response.status}`);
-            }
-
-            const data = await response.json();
-            const balanceEl = document.getElementById("balance");
-
-            if (data.success) {
-                balanceEl.innerText = `₦${data.balance.toLocaleString()}`;
-            } else {
-                balanceEl.innerText = "Balance unavailable";
-            }
-        } catch (error) {
-            console.error("Error fetching balance:", error);
-            document.getElementById("balance").innerText = "Balance unavailable";
-        }
-    }
+    document.getElementById("welcome-message").innerText = `${greeting}, ${username}!`;
+}
 </script>
 </body>
 </html>

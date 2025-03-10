@@ -40,18 +40,8 @@
     <script>
     document.addEventListener("DOMContentLoaded", () => {
         const loginForm = document.getElementById("loginForm");
-        const passwordInput = document.getElementById("password");
-        const passwordToggle = document.getElementById("password-toggle");
         const loginBtn = document.getElementById("loginBtn");
         const errorMessage = document.getElementById("error-message");
-
-        // Toggle Password Visibility
-        passwordToggle.addEventListener("click", () => {
-            const isHidden = passwordInput.type === "password";
-            passwordInput.type = isHidden ? "text" : "password";
-            passwordToggle.classList.toggle("fa-eye-slash", isHidden);
-            passwordToggle.classList.toggle("fa-eye", !isHidden);
-        });
 
         // Handle Login Submission
         loginForm.addEventListener("submit", async (e) => {
@@ -59,13 +49,12 @@
 
             const emailInput = document.getElementById("email");
             const email = emailInput.value.trim();
-            const password = passwordInput.value.trim();
 
             // Reset previous messages
             showMessage("", true);
 
-            if (!email || !password) {
-                showMessage("❌ Email and password are required!", false);
+            if (!email) {
+                showMessage("❌ Email is required!", false);
                 return;
             }
 
@@ -75,7 +64,7 @@
                 const response = await fetch("/login", {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({ email, password }) // ✅ Ensure email is sent correctly
+                    body: JSON.stringify({ email }) // ✅ Only send email (no password)
                 });
 
                 const data = await response.json();
@@ -85,7 +74,7 @@
                     localStorage.setItem("email", email); // ✅ Store email for session tracking
                     window.location.href = "/dashboard"; // ✅ Redirect on success
                 } else {
-                    showMessage(`❌ ${data.message || "Invalid email or password!"}`, false);
+                    showMessage(`❌ ${data.message || "Invalid email!"}`, false);
                 }
             } catch (error) {
                 showMessage("❌ Network error. Please try again!", false);

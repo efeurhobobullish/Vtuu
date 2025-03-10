@@ -38,62 +38,72 @@
     </div>
 
     <script>
-    document.addEventListener("DOMContentLoaded", () => {
-        const loginForm = document.getElementById("loginForm");
-        const loginBtn = document.getElementById("loginBtn");
-        const errorMessage = document.getElementById("error-message");
+document.addEventListener("DOMContentLoaded", () => {
+    const loginForm = document.getElementById("loginForm");
+    const loginBtn = document.getElementById("loginBtn");
+    const errorMessage = document.getElementById("error-message");
 
-        // Handle Login Submission
-        loginForm.addEventListener("submit", async (e) => {
-            e.preventDefault();
+    loginForm.addEventListener("submit", async (e) => {
+        e.preventDefault();
 
-            const emailInput = document.getElementById("email");
-            const email = emailInput.value.trim();
+        const email = document.getElementById("email").value.trim();
+        const password = document.getElementById("password").value.trim();
 
-            // Reset previous messages
-            showMessage("", true);
+        showMessage("", true);
 
-            if (!email) {
-                showMessage("❌ Email is required!", false);
-                return;
-            }
-
-            setLoadingState(true);
-
-            try {
-                const response = await fetch("/login", {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({ email }) // ✅ Only send email (no password)
-                });
-
-                const data = await response.json();
-                setLoadingState(false);
-
-                if (data.success) {
-                    localStorage.setItem("email", email); // ✅ Store email for session tracking
-                    window.location.href = "/dashboard"; // ✅ Redirect on success
-                } else {
-                    showMessage(`❌ ${data.message || "Invalid email!"}`, false);
-                }
-            } catch (error) {
-                showMessage("❌ Network error. Please try again!", false);
-                setLoadingState(false);
-            }
-        });
-
-        // Function to show messages
-        function showMessage(text, isHidden) {
-            errorMessage.textContent = text;
-            errorMessage.classList.toggle("hidden", isHidden);
+        if (!email || !password) {
+            showMessage("❌ Email and Password are required!", false);
+            return;
         }
 
-        // Function to toggle loading state
-        function setLoadingState(isLoading) {
-            loginBtn.innerText = isLoading ? "Logging in..." : "Login";
-            loginBtn.disabled = isLoading;
+        setLoadingState(true);
+
+        try {
+            const response = await fetch("/login", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ email, password }) // ✅ Now sending email & password
+            });
+
+            const data = await response.json();
+            setLoadingState(false);
+
+            if (data.success) {
+                localStorage.setItem("email", email); // ✅ Store email for session tracking
+                window.location.href = "/dashboard"; // ✅ Redirect on success
+            } else {
+                showMessage(`❌ ${data.message || "Invalid email or password!"}`, false);
+            }
+        } catch (error) {
+            showMessage("❌ Network error. Please try again!", false);
+            setLoadingState(false);
         }
     });
+
+    function showMessage(text, isHidden) {
+        errorMessage.textContent = text;
+        errorMessage.classList.toggle("hidden", isHidden);
+    }
+
+    function setLoadingState(isLoading) {
+        loginBtn.innerText = isLoading ? "Logging in..." : "Login";
+        loginBtn.disabled = isLoading;
+    }
+
+    // Toggle Password Visibility
+    window.togglePassword = () => {
+        const passwordInput = document.getElementById("password");
+        const toggleIcon = document.getElementById("password-toggle");
+
+        if (passwordInput.type === "password") {
+            passwordInput.type = "text";
+            toggleIcon.classList.replace("fa-eye-slash", "fa-eye");
+        } else {
+            passwordInput.type = "password";
+            toggleIcon.classList.replace("fa-eye", "fa-eye-slash");
+        }
+    };
+});
 </script>
 </body>
 </html>

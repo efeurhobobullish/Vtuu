@@ -62,15 +62,14 @@ document.addEventListener("DOMContentLoaded", () => {
             const response = await fetch("/login", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ email, password }) // ✅ Now sending email & password
+                body: JSON.stringify({ email, password })
             });
 
             const data = await response.json();
             setLoadingState(false);
 
             if (data.success) {
-                localStorage.setItem("email", email); // ✅ Store email for session tracking
-                window.location.href = "/dashboard"; // ✅ Redirect on success
+                window.location.href = "/dashboard"; // Redirect on success
             } else {
                 showMessage(`❌ ${data.message || "Invalid email or password!"}`, false);
             }
@@ -107,3 +106,4 @@ document.addEventListener("DOMContentLoaded", () => {
 </script>
 </body>
 </html>
+ 

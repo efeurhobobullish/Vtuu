@@ -135,52 +135,40 @@
 
         <!-- Bottom Navigation -->
         <div class="fixed bottom-0 left-0 right-0 bg-gray-800 p-4 flex justify-around text-center text-gray-400">
-            <a href="dashboard.html" class="text-purple-600">
+            <a href="dashboard" class="text-purple-600">
                 <i class="fas fa-th-large text-2xl"></i>
                 <p class="text-xs">Dashboard</p>
             </a>
-            <a href="services.html" class="text-white">
+            <a href="services" class="text-white">
                 <i class="fas fa-exchange-alt text-2xl"></i>
                 <p class="text-xs">Services</p>
             </a>
-            <a href="rewards.html" class="text-white">
+            <a href="rewards" class="text-white">
                 <i class="fas fa-gift text-2xl"></i>
                 <p class="text-xs">Rewards</p>
             </a>
-            <a href="settings.html" class="text-white">
+            <a href="settings" class="text-white">
                 <i class="fas fa-user-cog text-2xl"></i>
                 <p class="text-xs">Settings</p>
             </a>
-            <a href="support.html" class="text-white">
+            <a href="support" class="text-white">
                 <i class="fas fa-headset text-2xl"></i>
                 <p class="text-xs">Support</p>
             </a>
         </div>
     </div>
 
-           <script>
+           
+<script>
 document.addEventListener("DOMContentLoaded", () => {
-    validateUserSession();
     fetchDashboardData();
     fetchBalance();
 });
 
-// Validate User Session
-function validateUserSession() {
-    const email = localStorage.getItem("email");
-    if (!email) {
-        console.error("User not logged in. Redirecting to login...");
-        window.location.href = "login.html"; // Ensure correct login page path
-    }
-}
-
 // Fetch Dashboard Data
 async function fetchDashboardData() {
-    const email = localStorage.getItem("email");
-    if (!email) return;
-
     try {
-        const response = await fetch(`/dashboard?email=${encodeURIComponent(email)}`);
+        const response = await fetch("/dashboard"); // Assuming the server knows the user's session
         if (!response.ok) throw new Error("Unauthorized access");
 
         const data = await response.json();
@@ -188,20 +176,18 @@ async function fetchDashboardData() {
             updateWelcomeMessage(data.data.username);
         } else {
             console.error("Dashboard error:", data.message);
+            window.location.href = "login"; // Redirect to login if unauthorized
         }
     } catch (error) {
         console.error("Error fetching dashboard data:", error);
-        window.location.href = "login.html"; // Redirect to login if error occurs
+        window.location.href = "login" ; // Redirect to login if error occurs
     }
 }
 
 // Fetch User Balance
 async function fetchBalance() {
-    const email = localStorage.getItem("email");
-    if (!email) return;
-
     try {
-        const response = await fetch(`/api/user/balance?email=${encodeURIComponent(email)}`);
+        const response = await fetch("/api/user/balance"); // Assuming the server knows the user's session
         if (!response.ok) throw new Error("Failed to fetch balance");
 
         const data = await response.json();
@@ -225,5 +211,6 @@ function updateWelcomeMessage(username = "User") {
     document.getElementById("welcome-message").innerText = `${greeting}, ${username}!`;
 }
 </script>
+
 </body>
 </html>

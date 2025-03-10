@@ -58,94 +58,89 @@
     <!-- JavaScript -->
     <script>
     document.addEventListener("DOMContentLoaded", () => {
-        const signupForm = document.getElementById("signup-form");
-        const passwordInput = document.getElementById("password");
-        const passwordToggle = document.getElementById("toggle-password");
-        const passwordIcon = document.getElementById("password-icon");
-        const messageEl = document.getElementById("signup-message");
-        const submitButton = document.getElementById("signup-button");
-        const signupText = document.getElementById("signup-text");
-        const signupLoading = document.getElementById("signup-loading");
+    const signupForm = document.getElementById("signup-form");
+    const passwordInput = document.getElementById("password");
+    const passwordToggle = document.getElementById("toggle-password");
+    const passwordIcon = document.getElementById("password-icon");
+    const messageEl = document.getElementById("signup-message");
+    const submitButton = document.getElementById("signup-button");
+    const signupText = document.getElementById("signup-text");
+    const signupLoading = document.getElementById("signup-loading");
 
-        // Toggle Password Visibility
-        passwordToggle.addEventListener("click", () => {
-            const isHidden = passwordInput.type === "password";
-            passwordInput.type = isHidden ? "text" : "password";
-            passwordIcon.classList.toggle("fa-eye-slash", isHidden);
-            passwordIcon.classList.toggle("fa-eye", !isHidden);
-        });
+    // Toggle Password Visibility
+    passwordToggle.addEventListener("click", () => {
+        const isHidden = passwordInput.type === "password";
+        passwordInput.type = isHidden ? "text" : "password";
+        passwordIcon.classList.toggle("fa-eye-slash", isHidden);
+        passwordIcon.classList.toggle("fa-eye", !isHidden);
+    });
 
-        // Handle Signup Submission
-        signupForm.addEventListener("submit", async (e) => {
-            e.preventDefault();
+    // Handle Signup Submission
+    signupForm.addEventListener("submit", async (e) => {
+        e.preventDefault();
 
-            const username = document.getElementById("username").value.trim();
-            const email = document.getElementById("email").value.trim();
-            const password = passwordInput.value.trim();
+        const username = document.getElementById("username").value.trim();
+        const email = document.getElementById("email").value.trim();
+        const password = passwordInput.value.trim();
 
-            // Reset previous messages
-            showMessage("", "");
+        // Reset previous messages
+        showMessage("", "");
 
-            // Validate input fields
-            if (!username || !email || !password) {
-                showMessage("❌ All fields are required!", "text-red-500");
-                return;
-            }
-
-            if (!isValidEmail(email)) {
-                showMessage("❌ Enter a valid email address!", "text-red-500");
-                return;
-            }
-
-            if (password.length < 6) {
-                showMessage("❌ Password must be at least 6 characters long!", "text-red-500");
-                return;
-            }
-
-            // Show loading state
-            setLoadingState(true);
-
-            try {
-                const response = await fetch("/signup", {  
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({ username, email, password })
-                });
-
-                const result = await response.json();
-
-                if (result.success) {
-                    showMessage("✅ Signup successful! Redirecting to login...", "text-green-500");
-                    signupForm.reset();
-                    setTimeout(() => window.location.href = "/login", 1500);
-                } else {
-                    showMessage(`❌ ${result.message}`, "text-red-500");
-                }
-            } catch (error) {
-                showMessage("❌ Network error. Please try again!", "text-red-500");
-            } finally {
-                setLoadingState(false);
-            }
-        });
-
-        // Function to validate email format
-        function isValidEmail(email) {
-            return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+        // Validate input fields
+        if (!username || !email || !password) {
+            showMessage("❌ All fields are required!", "text-red-500");
+            return;
         }
 
-        // Function to show messages
-        function showMessage(text, className) {
-            messageEl.textContent = text;
-            messageEl.className = `text-center text-sm mt-4 ${className}`;
+        if (!isValidEmail(email)) {
+            showMessage("❌ Enter a valid email address!", "text-red-500");
+            return;
         }
 
-        // Function to toggle loading state
-        function setLoadingState(isLoading) {
-            submitButton.disabled = isLoading;
-            signupText.classList.toggle("hidden", isLoading);
-            signupLoading.classList.toggle("hidden", !isLoading);
+        // Show loading state
+        setLoadingState(true);
+
+        try {
+            const response = await fetch("/signup", {  
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ username, email, password })
+            });
+
+            const result = await response.json();
+
+            if (result?.success) {
+                showMessage("✅ Signup successful! Redirecting...", "text-green-500");
+                signupForm.reset();
+                setTimeout(() => window.location.href = "/login", 1500);
+            } else {
+                showMessage(`❌ ${result?.message || "Signup failed!"}`, "text-red-500");
+            }
+        } catch (error) {
+            showMessage("❌ Network error. Please try again!", "text-red-500");
+        } finally {
+            setLoadingState(false);
         }
     });
+
+    // Function to validate email format
+    function isValidEmail(email) {
+        return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+    }
+
+    // Function to show messages
+    function showMessage(text, className) {
+        messageEl.textContent = text;
+        messageEl.className = `text-center text-sm mt-4 ${className}`;
+    }
+
+    // Function to toggle loading state
+    function setLoadingState(isLoading) {
+        submitButton.disabled = isLoading;
+        signupText.classList.toggle("hidden", isLoading);
+        signupLoading.classList.toggle("hidden", !isLoading);
+    }
+});
 </script>
 </body>
 </html>

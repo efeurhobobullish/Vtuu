@@ -22,7 +22,7 @@ const UserSchema = new mongoose.Schema({
     balance: { type: Number, default: 0.00 },
     telegramId: { type: String, sparse: true }
 }, { timestamps: true });
-
+UserSchema.index({ telegramId: 1 }, { unique: true, partialFilterExpression: { telegramId: { $exists: true } } });
 const User = mongoose.model("User", UserSchema);
 
 // Connect to MongoDB
@@ -151,7 +151,7 @@ app.get("/cable", (req, res) => res.sendFile(path.join(__dirname, "./public/user
 app.get("/changePin", (req, res) => res.sendFile(path.join(__dirname, "./public/user/change-pin.html")));
 app.get("/crypto", (req, res) => res.sendFile(path.join(__dirname, "./public/user/crypto.html")));
 app.get("/dashboard", (req, res) => {
-    res.sendFile(path.join(__dirname, "../public/user/dashboard.html"));
+    res.sendFile(path.join(__dirname, "./public/user/dashboard.html"));
 });
 app.get("/data", (req, res) => res.sendFile(path.join(__dirname, "./public/user/data.html")));
 app.get("/docs", (req, res) => res.sendFile(path.join(__dirname, "./public/user/docs.html")));

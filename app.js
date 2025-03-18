@@ -74,17 +74,17 @@ app.post("/login", async (req, res) => {
         if (!user || !(await bcrypt.compare(password, user.password))) {
             return res.status(400).json({ success: false, message: "Invalid email or password!" });
         }
-
         res.json({
             success: true,
             message: "Login successful!",
-            user: { id: user._id, username: user.username, email: user.email }
+            redirectURL: "/dashboard"
         });
     } catch (error) {
         console.error("Login Error:", error);
         res.status(500).json({ success: false, message: "Server error!" });
     }
 });
+
 
 // u see this scroll to line 185 and read why i added this
 app.post("/recreate-index", async (req, res) => {

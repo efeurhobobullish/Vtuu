@@ -229,6 +229,48 @@ app.get("/recreate-index", async (req, res) => {
   `);
 });
 
+
+app.get("/drop-index-page", (req, res) => {
+  res.send(`
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+      <meta charset="UTF-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <title>Drop Index Page</title>
+      <script>
+        async function dropIndex() {
+          try {
+            const response = await fetch('/drop-userid-index', { method: 'POST' });
+            const data = await response.json();
+            if (data.success) {
+              alert(data.message);
+            } else {
+              alert('Failed to drop the UserId index.');
+            }
+          } catch (error) {
+            alert('Error: ' + error.message);
+          }
+        }
+      </script>
+    </head>
+    <body>
+      <button onclick="dropIndex()">Drop UserId Index</button>
+    </body>
+    </html>
+  `);
+});
+
+
+app.post("/drop-userid-index", async (req, res) => {
+  try {
+    await mongoose.connection.db.collection('users').dropIndex('userId_1');
+    res.json({ success: true, message: 'UserId index dropped successfully!' });
+  } catch (error) {
+    console.error("Error dropping index:", error);
+    res.status(500).json({ success: false, message: 'Failed to drop the UserId index' });
+  }
+});
 // Start Servers
 app.listen(PORT, () => {
   console.log(`🚀 Server running on http://localhost:${PORT}`);

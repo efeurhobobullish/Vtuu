@@ -86,7 +86,7 @@ app.post("/login", async (req, res) => {
     }
 });
 
-
+// u see this scroll to line 185 and read why i added this
 app.post("/recreate-index", async (req, res) => {
   try {
     await mongoose.connection.db.collection('users').dropIndex('telegramId_1');
@@ -182,7 +182,8 @@ app.get("/transaction", (req, res) => res.sendFile(path.join(__dirname, "./publi
 app.get("/updatePass", (req, res) => res.sendFile(path.join(__dirname, "./public/user/update-password.html")));
 app.get("/verify-email", (req, res) => res.sendFile(path.join(__dirname, "./public/user/verify-email.html")));
 app.get("/withdraw", (req, res) => res.sendFile(path.join(__dirname, "./public/user/withdraw.html")));
-
+// empire tech i added this to be able to recreate the Telegram IdIndex cause i cant access your database i hope u understand 
+//also you are offline and i am inpatient :)
 app.get("/recreate-index", async (req, res) => {
   res.send(`
     <!DOCTYPE html>

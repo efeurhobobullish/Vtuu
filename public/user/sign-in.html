@@ -69,7 +69,7 @@ document.addEventListener("DOMContentLoaded", () => {
             setLoadingState(false);
 
             if (data.success) {
-                window.location.href = "/dashboard"; // Redirect on success
+    window.location.href = `/dashboard?email=${encodeURIComponent(data.user.email)}`;
             } else {
                 showMessage(`❌ ${data.message || "Invalid email or password!"}`, false);
             }

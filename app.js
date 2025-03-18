@@ -39,10 +39,15 @@ connectDB();
 // Signup (With Password Hashing)
 app.post("/signup", async (req, res) => {
     try {
-        const { username, email, password } = req.body;
+        const { username, email, phone, password } = req.body;
 
-        if (!username || !email || !password) {
+        if (!username || !email || !phone || !password) {
             return res.status(400).json({ success: false, message: "All fields are required!" });
+        }
+
+          const existingUser = await User.findOne({ phone });
+        if (existingUser) {
+            return res.status(400).json({ success: false, message: "Phone number  exists!" });
         }
 
         const hashedPassword = await bcrypt.hash(password, 10);

@@ -65,15 +65,23 @@ app.post("/signup", async (req, res) => {
 app.post("/login", async (req, res) => {
     try {
         const { email, password } = req.body;
+        
+        console.log("Login attempt:", { email, password });
 
         if (!email || !password) {
             return res.status(400).json({ success: false, message: "Email and password are required!" });
         }
 
         const user = await User.findOne({ email });
-        if (!user || !(await bcrypt.compare(password, user.password))) {
+        if (!user) {
             return res.status(400).json({ success: false, message: "Invalid email or password!" });
         }
+
+        const isPasswordCorrect = await bcrypt.compare(password, user.password);
+        if (!isPasswordCorrect) {
+            return res.status(400).json({ success: false, message: "Invalid email or password!" });
+        }
+
         res.json({
             success: true,
             message: "Login successful!",
@@ -81,9 +89,10 @@ app.post("/login", async (req, res) => {
         });
     } catch (error) {
         console.error("Login Error:", error);
-        next(error);
+        return res.status(500).json({ success: false, message: "Server error" });
     }
 });
+
 
 
 // u see this scroll to line 185 and read why i added this

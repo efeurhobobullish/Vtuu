@@ -69,7 +69,8 @@ document.addEventListener("DOMContentLoaded", () => {
             setLoadingState(false);
 
             if (data.success) {
-    window.location.href = `/dashboard?email=${encodeURIComponent(data.user.email)}`;
+     localStorage.setItem('userEmail', data.user.email);
+    window.location.href = "/dashboard";
             } else {
                 showMessage(`❌ ${data.message || "Invalid email or password!"}`, false);
             }

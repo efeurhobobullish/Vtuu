@@ -20,7 +20,7 @@ const UserSchema = new mongoose.Schema({
     phone: { type: String, required: true, unique: true },
     password: { type: String, required: true },
     balance: { type: Number, default: 0.00 },
-    telegramId: { type: String, unique: true, sparse: true }
+    telegramId: { type: String, sparse: true }
 }, { timestamps: true });
 
 const User = mongoose.model("User", UserSchema);

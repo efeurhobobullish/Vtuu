@@ -57,7 +57,7 @@ app.post("/signup", async (req, res) => {
         res.json({ success: true, message: "User registered successfully!" });
     } catch (error) {
         console.error("Signup Error:", error);
-        res.status(500).json({ success: false, message: "Server error!" });
+        next(error); 
     }
 });
 
@@ -81,7 +81,7 @@ app.post("/login", async (req, res) => {
         });
     } catch (error) {
         console.error("Login Error:", error);
-        res.status(500).json({ success: false, message: "Server error!" });
+        next(error);
     }
 });
 
@@ -94,7 +94,7 @@ app.post("/recreate-index", async (req, res) => {
     res.json({ success: true, message: "Telegram ID index has been recreated!" });
   } catch (error) {
     console.error("Error creating index:", error);
-    res.status(500).json({ success: false, message: "Error recreating index." });
+    next(error);
   }
 });
 
@@ -124,7 +124,7 @@ app.get("/dashboard", async (req, res) => {
         });
     } catch (error) {
         console.error("Error retrieving dashboard data:", error);
-        res.status(500).json({ success: false, message: "Server error" });
+        rnext(error);
     }
 });
 
@@ -145,8 +145,12 @@ app.get("/api/user/balance", async (req, res) => {
         res.json({ success: true, balance: user.balance || 0 });
     } catch (error) {
         console.error("Error fetching balance:", error);
-        res.status(500).json({ success: false, message: "Error fetching balance" });
+        next(error);
     }
+});
+app.use((err, req, res, next) => {
+    console.error("Global Error Handler:", err);
+    res.status(500).json({ success: false, message: "Internal server error" });
 });
 
 

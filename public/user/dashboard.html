@@ -167,12 +167,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 async function fetchDashboardData() {
     try {
-        const email = localStorage.getItem("userEmail"); 
-        if (!email) {
-            window.location.href = "login";
-            return;
-        }
-        const response = await fetch(`/dashboard?email=${encodeURIComponent(email)}`); // Pass email in request
+        const response = await fetch("/dashboard");
         if (!response.ok) throw new Error("Unauthorized access");
 
         const data = await response.json();

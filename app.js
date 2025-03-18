@@ -53,7 +53,7 @@ app.post("/signup", async (req, res) => {
             return res.status(400).json({ success: false, message: "Phone number already exists!" });
         }
         const hashedPassword = await bcrypt.hash(password, 10);
-        const newUser = new User({ username, email, phone, password: hashedPassword });
+        const newUser = new User({ username, email, phone, password: hashedPassword,telegramId: telegramId || undefined });
         await newUser.save();
         res.json({ success: true, message: "User registered successfully!" });
     } catch (error) {

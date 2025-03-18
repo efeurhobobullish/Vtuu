@@ -165,10 +165,14 @@ document.addEventListener("DOMContentLoaded", () => {
     fetchBalance();
 });
 
-// Fetch Dashboard Data
 async function fetchDashboardData() {
     try {
-        const response = await fetch("/dashboard"); // Assuming the server knows the user's session
+        const email = localStorage.getItem("userEmail"); 
+        if (!email) {
+            window.location.href = "login";
+            return;
+        }
+        const response = await fetch(`/dashboard?email=${encodeURIComponent(email)}`); // Pass email in request
         if (!response.ok) throw new Error("Unauthorized access");
 
         const data = await response.json();
@@ -180,9 +184,10 @@ async function fetchDashboardData() {
         }
     } catch (error) {
         console.error("Error fetching dashboard data:", error);
-        window.location.href = "login" ; // Redirect to login if error occurs
+        window.location.href = "login"; // Redirect to login if error occurs
     }
 }
+
 
 // Fetch User Balance
 async function fetchBalance() {

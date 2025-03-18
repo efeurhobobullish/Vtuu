@@ -17,6 +17,7 @@ app.use(express.urlencoded({ extended: true }));
 const UserSchema = new mongoose.Schema({
     username: { type: String, required: true },
     email: { type: String, required: true, unique: true },
+    phone: { type: String, required: true, unique: true },
     password: { type: String, required: true },
     balance: { type: Number, default: 0.00 }
 }, { timestamps: true });

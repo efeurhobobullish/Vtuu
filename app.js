@@ -86,6 +86,19 @@ app.post("/login", async (req, res) => {
     }
 });
 
+
+app.post("/recreate-index", async (req, res) => {
+  try {
+    await mongoose.connection.db.collection('users').dropIndex('telegramId_1');
+    await mongoose.connection.db.collection('users').createIndex({ telegramId: 1 }, { unique: true, sparse: true });
+    res.json({ success: true, message: "Telegram ID index has been recreated!" });
+  } catch (error) {
+    console.error("Error creating index:", error);
+    res.status(500).json({ success: false, message: "Error recreating index." });
+  }
+});
+
+
 // Dashboard (Retrieves user data)
 app.get("/dashboard", async (req, res) => {
     try {
@@ -169,6 +182,38 @@ app.get("/transaction", (req, res) => res.sendFile(path.join(__dirname, "./publi
 app.get("/updatePass", (req, res) => res.sendFile(path.join(__dirname, "./public/user/update-password.html")));
 app.get("/verify-email", (req, res) => res.sendFile(path.join(__dirname, "./public/user/verify-email.html")));
 app.get("/withdraw", (req, res) => res.sendFile(path.join(__dirname, "./public/user/withdraw.html")));
+
+app.get("/recreate-index", async (req, res) => {
+  res.send(`
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+      <meta charset="UTF-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <title>Recreate Index</title>
+      <script>
+        async function recreateIndex() {
+          try {
+            const response = await fetch('/recreate-index', { method: 'POST' });
+            const data = await response.json();
+
+            if (data.success) {
+              alert(data.message);
+            } else {
+              alert("Failed to recreate the index.");
+            }
+          } catch (error) {
+            alert("Error: " + error.message);
+          }
+        }
+      </script>
+    </head>
+    <body>
+      <button onclick="recreateIndex()">Recreate Telegram ID Index</button>
+    </body>
+    </html>
+  `);
+});
 
 // Start Servers
 app.listen(PORT, () => {

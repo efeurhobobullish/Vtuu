@@ -22,7 +22,6 @@ const UserSchema = new mongoose.Schema({
     balance: { type: Number, default: 0.00 },
     telegramId: { type: String, sparse: true }
 }, { timestamps: true });
-UserSchema.index({ telegramId: 1 }, { unique: true, partialFilterExpression: { telegramId: { $exists: true } } });
 const User = mongoose.model("User", UserSchema);
 
 // Connect to MongoDB

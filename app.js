@@ -40,19 +40,19 @@ connectDB();
 app.post("/signup", async (req, res) => {
     try {
         const { username, email, phone, password } = req.body;
-
         if (!username || !email || !phone || !password) {
             return res.status(400).json({ success: false, message: "All fields are required!" });
         }
-
-          const existingUser = await User.findOne({ phone });
-        if (existingUser) {
-            return res.status(400).json({ success: false, message: "Phone number  exists!" });
+        const existingEmail = await User.findOne({ email });
+        if (existingEmail) {
+            return res.status(400).json({ success: false, message: "Email already exists!" });
         }
-
+        const existingPhone = await User.findOne({ phone });
+        if (existingPhone) {
+            return res.status(400).json({ success: false, message: "Phone number already exists!" });
+        }
         const hashedPassword = await bcrypt.hash(password, 10);
-        const newUser = new User({ username, email, password: hashedPassword });
-
+        const newUser = new User({ username, email, phone, password: hashedPassword });
         await newUser.save();
         res.json({ success: true, message: "User registered successfully!" });
     } catch (error) {

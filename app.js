@@ -3,7 +3,7 @@ const path = require("path");
 const mongoose = require("mongoose");  
 const cors = require("cors");  
 const bcrypt = require( "bcryptjs");  
-const config = require("../config"); // Adjust path if needed
+const config = require("./config"); // Adjust path if needed
 
 const app = express();
 const PORT = process.env.PORT || 3000;  

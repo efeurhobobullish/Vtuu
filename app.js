@@ -109,7 +109,7 @@ app.post("/recreate-index", async (req, res) => {
 
 
 // Dashboard (Retrieves user data)
-app.get("/dashboard", async (req, res) => {
+app.get("/dashboard", async (req, res, next) => {
     try {
         const { email } = req.query;
 
@@ -133,10 +133,9 @@ app.get("/dashboard", async (req, res) => {
         });
     } catch (error) {
         console.error("Error retrieving dashboard data:", error);
-        rnext(error);
+        next(error);
     }
 });
-
 // Get User Balance
 app.get("/api/user/balance", async (req, res) => {
     try {

@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <title>Sign In</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
@@ -38,73 +38,72 @@
     </div>
 
     <script>
-document.addEventListener("DOMContentLoaded", () => {
-    const loginForm = document.getElementById("loginForm");
-    const loginBtn = document.getElementById("loginBtn");
-    const errorMessage = document.getElementById("error-message");
+    document.addEventListener("DOMContentLoaded", () => {
+        const loginForm = document.getElementById("loginForm");
+        const loginBtn = document.getElementById("loginBtn");
+        const errorMessage = document.getElementById("error-message");
 
-    loginForm.addEventListener("submit", async (e) => {
-        e.preventDefault();
+        loginForm.addEventListener("submit", async (e) => {
+            e.preventDefault();
 
-        const email = document.getElementById("email").value.trim();
-        const password = document.getElementById("password").value.trim();
+            const email = document.getElementById("email").value.trim();
+            const password = document.getElementById("password").value.trim();
 
-        showMessage("", true);
+            showMessage("", true);
 
-        if (!email || !password) {
-            showMessage("❌ Email and Password are required!", false);
-            return;
-        }
-
-        setLoadingState(true);
-
-        try {
-            const response = await fetch("/login", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ email, password })
-            });
-
-            const data = await response.json();
-            setLoadingState(false);
-
-            if (data.success) {
-     localStorage.setItem('userEmail', data.user.email);
-    window.location.href = "/dashboard";
-            } else {
-                showMessage(`❌ ${data.message || "Invalid email or password!"}`, false);
+            if (!email || !password) {
+                showMessage("Email and Password are required!", false);
+                return;
             }
-        } catch (error) {
-            showMessage("❌ Network error. Please try again!", false);
-            setLoadingState(false);
+
+            setLoadingState(true);
+
+            try {
+                const response = await fetch("/login", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ email, password })
+                });
+
+                const data = await response.json();
+                setLoadingState(false);
+
+                if (data.success) {
+                    localStorage.setItem("userEmail", data.user.email);
+                    window.location.href = "/dashboard";
+                } else {
+                    showMessage(data.message || "Invalid email or password!", false);
+                }
+            } catch (error) {
+                showMessage("Network error. Please try again!", false);
+                setLoadingState(false);
+            }
+        });
+
+        function showMessage(text, isHidden) {
+            errorMessage.textContent = text;
+            errorMessage.classList.toggle("hidden", isHidden);
         }
+
+        function setLoadingState(isLoading) {
+            loginBtn.innerText = isLoading ? "Logging in..." : "Login";
+            loginBtn.disabled = isLoading;
+        }
+
+        // Toggle Password Visibility
+        window.togglePassword = () => {
+            const passwordInput = document.getElementById("password");
+            const toggleIcon = document.getElementById("password-toggle");
+
+            if (passwordInput.type === "password") {
+                passwordInput.type = "text";
+                toggleIcon.classList.replace("fa-eye-slash", "fa-eye");
+            } else {
+                passwordInput.type = "password";
+                toggleIcon.classList.replace("fa-eye", "fa-eye-slash");
+            }
+        };
     });
-
-    function showMessage(text, isHidden) {
-        errorMessage.textContent = text;
-        errorMessage.classList.toggle("hidden", isHidden);
-    }
-
-    function setLoadingState(isLoading) {
-        loginBtn.innerText = isLoading ? "Logging in..." : "Login";
-        loginBtn.disabled = isLoading;
-    }
-
-    // Toggle Password Visibility
-    window.togglePassword = () => {
-        const passwordInput = document.getElementById("password");
-        const toggleIcon = document.getElementById("password-toggle");
-
-        if (passwordInput.type === "password") {
-            passwordInput.type = "text";
-            toggleIcon.classList.replace("fa-eye-slash", "fa-eye");
-        } else {
-            passwordInput.type = "password";
-            toggleIcon.classList.replace("fa-eye", "fa-eye-slash");
-        }
-    };
-});
-</script>
+    </script>
 </body>
 </html>
- 

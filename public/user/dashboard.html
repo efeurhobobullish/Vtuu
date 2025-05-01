@@ -198,9 +198,12 @@ async function fetchBalance(email) {
         if (!response.ok) throw new Error("Failed to fetch balance");
 
         const data = await response.json();
-        document.getElementById("balance").innerText = data.success 
-            ? `₦${data.balance.toLocaleString()}`
-            : "Balance unavailable";
+        if (data.success) {
+            document.getElementById("balance").innerText = `₦${data.balance.toLocaleString()}`;
+        } else {
+            console.error("Error fetching balance:", data.message);
+            document.getElementById("balance").innerText = "Balance unavailable";
+        }
     } catch (error) {
         console.error("Error fetching balance:", error);
         document.getElementById("balance").innerText = "Balance unavailable";

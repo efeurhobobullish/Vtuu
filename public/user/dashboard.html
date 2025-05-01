@@ -160,13 +160,15 @@
 
            
 <script>
-document.addEventListener("DOMContentLoaded", () => {
-    const userEmail = localStorage.getItem("userEmail");
+    document.addEventListener("DOMContentLoaded", () => {
+    const userEmail = new URLSearchParams(window.location.search).get("email");
 
     if (!userEmail) {
         window.location.href = "login"; // Not logged in
         return;
     }
+
+    console.log("User email:", userEmail);  // Check if email is correctly retrieved
 
     fetchDashboardData(userEmail);
     fetchBalance(userEmail);
@@ -219,4 +221,3 @@ function updateWelcomeMessage(username = "User") {
 
     document.getElementById("welcome-message").innerText = `${greeting}, ${username}!`;
 }
-</script>

@@ -37,7 +37,7 @@ async function connectDB() {
 connectDB();
 
 // Signup (With Password Hashing)
-app.post("/signup", async (req, res) => {
+app.post("/signup", async (req, res,next) => {
     try {
         const { username, email, phone, password } = req.body;
         if (!username || !email || !phone || !password) {
@@ -96,7 +96,7 @@ app.post("/login", async (req, res) => {
 
 
 // u see this scroll to line 185 and read why i added this
-app.post("/recreate-index", async (req, res) => {
+app.post("/recreate-index", async (req, res,next) => {
   try {
     await mongoose.connection.db.collection('users').dropIndex('telegramId_1');
     await mongoose.connection.db.collection('users').createIndex({ telegramId: 1 }, { unique: true, sparse: true });
@@ -140,7 +140,7 @@ app.post("/dashboard", async (req, res, next) => {
 
 
 // Get User Balance
-app.get("/api/user/balance", async (req, res) => {
+app.get("/api/user/balance", async (req, res,next) => {
     try {
         const { email } = req.query;
 

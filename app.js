@@ -107,6 +107,16 @@ app.post("/recreate-index", async (req, res,next) => {
   }
 });
 
+app.post("/drop-all-user-indexes", async (req, res, next) => {
+  try {
+    await mongoose.connection.db.collection("users").dropIndexes();
+    res.json({ success: true, message: "All indexes on 'users' collection dropped successfully!" });
+  } catch (error) {
+    console.error("Error dropping all indexes:", error);
+    next(error);
+  }
+});
+
 
 // Dashboard (Retrieves user data)
 app.post("/dashboard", async (req, res, next) => {

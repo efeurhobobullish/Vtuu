@@ -109,9 +109,9 @@ app.post("/recreate-index", async (req, res) => {
 
 
 // Dashboard (Retrieves user data)
- app.get("/dashboard", async (req, res, next) => {
+app.post("/dashboard", async (req, res, next) => {
     try {
-        const email = req.query.email || req.headers["x-user-email"];
+        const { email } = req.body;  
 
         if (!email) {
             return res.status(400).json({ success: false, message: "Email is required!" });
@@ -136,6 +136,7 @@ app.post("/recreate-index", async (req, res) => {
         next(error);
     }
 });
+
 
 // Get User Balance
 app.get("/api/user/balance", async (req, res) => {

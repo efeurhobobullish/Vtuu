@@ -111,7 +111,7 @@ app.post("/recreate-index", async (req, res) => {
 // Dashboard (Retrieves user data)
 app.post("/dashboard", async (req, res, next) => {
     try {
-        const { email } = req.body;  
+        const { email } = req.body;
 
         if (!email) {
             return res.status(400).json({ success: false, message: "Email is required!" });
@@ -133,9 +133,10 @@ app.post("/dashboard", async (req, res, next) => {
         });
     } catch (error) {
         console.error("Error retrieving dashboard data:", error);
-        next(error);
+        next(error); 
     }
 });
+
 
 
 // Get User Balance

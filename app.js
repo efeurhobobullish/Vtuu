@@ -240,6 +240,29 @@ app.get("/recreate-index", async (req, res) => {
     </html>
   `);
 });
+app.get("/drop-all-user-indexes", async (req, res) => {
+  try {
+    await mongoose.connection.db.collection("users").dropIndexes();
+    res.send(`
+      <html>
+        <head><title>Indexes Dropped</title></head>
+        <body>
+          <h2>✅ All indexes on 'users' collection dropped successfully!</h2>
+        </body>
+      </html>
+    `);
+  } catch (error) {
+    console.error("Error dropping all indexes:", error);
+    res.status(500).send(`
+      <html>
+        <head><title>Error</title></head>
+        <body>
+          <h2>❌ Failed to drop indexes: ${error.message}</h2>
+        </body>
+      </html>
+    `);
+  }
+});
 
 
 app.get("/drop-index-page", (req, res) => {

@@ -198,13 +198,25 @@ async function fetchDashboardData(email) {
 
 async function fetchBalance(email) {
     try {
-        const response = await fetch(`/api/user/balance?email=${encodeURIComponent(email)}`);
-        if (!response.ok) throw new Error("Failed to fetch balance");
+        const url = `https://vtuu.onrender.com/api/user/balance?email=${encodeURIComponent(email)}`;
+        console.log("Fetching balance from:", url);
 
+        const response = await fetch(url);
         const data = await response.json();
-        document.getElementById("balance").innerText = data.success 
-            ? `₦${data.balance.toLocaleString()}`
-            : "Balance unavailable";
+
+        console.log("Response data:", data);
+
+        const balanceElement = document.getElementById("balance");
+
+        if (data.success) {
+            const formatted = new Intl.NumberFormat('en-NG', {
+                style: 'currency',
+                currency: 'NGN'
+            }).format(data.balance);
+            balanceElement.innerText = formatted;
+        } else {
+            balanceElement.innerText = "Balance unavailable";
+        }
     } catch (error) {
         console.error("Balance fetch error:", error);
         document.getElementById("balance").innerText = "Balance unavailable";

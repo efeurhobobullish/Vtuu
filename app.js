@@ -150,7 +150,7 @@ app.post("/dashboard", async (req, res, next) => {
 
 
 // Get User Balance
-app.get("/api/user/balance", async (req, res,next) => {
+app.get("/api/user/balance", async (req, res, next) => {
     try {
         const { email } = req.query;
 
@@ -169,11 +169,6 @@ app.get("/api/user/balance", async (req, res,next) => {
         next(error);
     }
 });
-app.use((err, req, res, next) => {
-    console.error("Global Error Handler:", err);
-    res.status(500).json({ success: false, message: "Internal server error" });
-});
-
 
 // Serve static files
 app.use(express.static(path.join(__dirname, "public")));
